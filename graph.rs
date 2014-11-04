@@ -16,7 +16,7 @@ pub struct AdjListGraph<I, D> {
 
 #[deriving(Clone)]
 struct Vertex<I, D> {
-	id: I,
+    id: I,
     data: D,
     neighbours: Vec<AdjListNode<I>>,
 }
@@ -40,20 +40,20 @@ struct MetadataDijsktra<I> {
 }
 
 pub trait Graph<I: Eq + Hash + Clone, D> {
-	fn add_vertex(&mut self, vertex_id: I, data: D) -> ();
-	
-	fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> ();
+    fn add_vertex(&mut self, vertex_id: I, data: D) -> ();
     
-	fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> ();
+    fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> ();
+    
+    fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> ();
     
     fn add_undirected_edge(&mut self, start_vertex: I, end_vertex: I) -> ();
     
     fn add_undirected_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> ();
-	
+    
     fn get_vertex_ids(&self) -> Vec<I>;
     
-	fn get_vertex_data(& self, vertex_id: &I) -> Option<& D>;
-	
+    fn get_vertex_data(& self, vertex_id: &I) -> Option<& D>;
+    
     fn get_vertex_neighbours(& self, vertex_id: &I) -> Vec<I>;
     
     fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> int;
@@ -201,7 +201,7 @@ impl<I> AdjListNode<I> {
 impl<I, D> Vertex<I, D> {
     pub fn new(id: I, data: D) -> Vertex<I, D> {
         Vertex {
-        	id: id,
+            id: id,
             data: data,
             neighbours: Vec::new(),
         }
