@@ -33,6 +33,12 @@ pub struct KCoreDecomposition<I> {
     vertices: Vec<I>
 }
 
+#[deriving(Show, Clone)]
+pub struct GraphPath<I> {
+    distance: int,
+    path: Vec<I>
+}
+
 struct MetadataDijsktra<I> {
     predecessor: Option<I>,
     visited: bool,
@@ -70,24 +76,24 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     //     // add code here
     // }
 
-    fn breadth_first_search_from_index(& self, start_vertex: I) -> () {
-        // add code here
-    }
+    // fn breadth_first_search_from_index(& self, start_vertex: I) -> () {
+    //     // add code here
+    // }
 
-    fn depth_first_search_from_index(& self, start_vertex: I) -> () {
-        // add code here
-    }
+    // fn depth_first_search_from_index(& self, start_vertex: I) -> () {
+    //     // add code here
+    // }
 
-    fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> Vec<I> {
+    fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> GraphPath<I> {
         if !self.is_id_in_graph(start_vertex) || !self.is_id_in_graph(target_vertex) {
-            return Vec::new();
+            return GraphPath::new();
         }
         
         let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
         let mut vertices: Vec<I> = self.get_vertex_ids();
         
         for id in vertices.iter() {
-            let id_val = (*id).clone(); // CHECK THIS SHOULD AUTO DEREFERENCE!!!
+            let id_val = id.clone();
             metadata.insert(id_val, MetadataDijsktra {
                 predecessor: None,
                 visited: false,
@@ -131,20 +137,94 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             }
         }
         
-        let mut result: Vec<I> = Vec::new();
+        let mut result: GraphPath<I> = GraphPath::new();
+        result.set_distance(metadata.find(target_vertex).unwrap().distance);
+        
+        let mut path: Vec<I> = Vec::new();
         let mut last: &I = target_vertex;
+        
         while *last != *start_vertex {
-            result.insert(0, last.clone());
+            path.insert(0, last.clone());
             last = metadata.find(last).unwrap().predecessor.as_ref().unwrap();
         }
         
-        result.insert(0, start_vertex.clone());
+        path.insert(0, start_vertex.clone());
+        
+        result.set_path(path);
         result
     }
 
-    fn dijkstras_shortest_paths(& self, start_vertex: I) -> HashMap<I, Vec<I>> {
-        // add code here
-        HashMap::new()
+    fn dijkstras_shortest_paths(& self, start_vertex: &I) -> HashMap<I, GraphPath<I>> {
+        if !self.is_id_in_graph(start_vertex) {
+            return HashMap::new();
+        }
+        
+        let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
+        let mut vertices: Vec<I> = self.get_vertex_ids();
+        let vertices_copy: Vec<I> = vertices.clone();
+        
+        for id in vertices.iter() {
+            let id_val = id.clone();
+            metadata.insert(id_val, MetadataDijsktra {
+                predecessor: None,
+                visited: false,
+                distance: int::MAX
+            });
+        }
+        match metadata.find_mut(start_vertex) {
+            Some(ref mut x) => x.distance = 0,
+            None => ()
+        }
+        
+        let mut min_id: I = start_vertex.clone();
+        while !vertices.is_empty() {
+            
+            let mut min = int::MAX;
+            for id in vertices.iter() {
+                if metadata.find(id).unwrap().distance <= min {
+                    min = metadata.find(id).unwrap().distance;
+                    min_id = id.clone();
+                }
+            }
+            
+            metadata.find_mut(&min_id).unwrap().visited = true;
+            for i in range(0, vertices.len()) {
+                if vertices[i] == min_id {
+                    vertices.remove(i);
+                    break;
+                }
+            }
+            
+            for id in self.get_vertex_neighbours(&min_id).iter() {
+                if !metadata.find(id).unwrap().visited {
+                    if metadata.find(id).unwrap().distance > (metadata.find(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
+                        metadata.find_mut(id).unwrap().distance = metadata.find(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
+                        metadata.find_mut(id).unwrap().predecessor = Some(min_id.clone());
+                    }
+                }
+            }
+        }
+        
+        let mut result: HashMap<I, GraphPath<I>> = HashMap::new();
+        for id in vertices_copy.iter() {
+            let mut shortest_path: GraphPath<I> = GraphPath::new();
+            shortest_path.set_distance(metadata.find(id).unwrap().distance);
+            
+            let mut path: Vec<I> = Vec::new();
+            let mut last: &I = id;
+            
+            while *last != *start_vertex {
+                path.insert(0, last.clone());
+                last = metadata.find(last).unwrap().predecessor.as_ref().unwrap();
+            }
+            
+            path.insert(0, start_vertex.clone());
+            shortest_path.set_path(path);
+            
+            result.insert(id.clone(), shortest_path);
+        }
+        
+        result
     }
 
     fn graph_diameter_path(& self) -> Vec<I> {
@@ -180,47 +260,6 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         // add code here
         Vec::new()
     }
-}
-
-impl<I> AdjListNode<I> {
-    pub fn new(vertex_id: I) -> AdjListNode<I> {
-        AdjListNode {
-            vertex_id: vertex_id,
-            weight: 0
-        }
-    }
-    
-    pub fn new_with_weight(vertex_id: I, weight: int) -> AdjListNode<I> {
-        AdjListNode {
-            vertex_id: vertex_id,
-            weight: weight
-        }
-    }
-}
-
-impl<I, D> Vertex<I, D> {
-    pub fn new(id: I, data: D) -> Vertex<I, D> {
-        Vertex {
-            id: id,
-            data: data,
-            neighbours: Vec::new(),
-        }
-    }
-}
-
-impl<I: Eq + Hash + Clone, D> AdjListGraph<I, D> {
-    pub fn new() -> AdjListGraph<I, D> {
-        AdjListGraph {
-            vertices: HashMap::new()
-        }
-    }
-    
-    pub fn new_with_capacity(capactiy: uint) -> AdjListGraph<I, D> {
-        AdjListGraph {
-            vertices: HashMap::with_capacity(capactiy)
-        }
-    }
-    
 }
 
 impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
@@ -340,4 +379,70 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
         }
     }
     
+}
+
+impl<I: Eq + Hash + Clone, D> AdjListGraph<I, D> {
+    pub fn new() -> AdjListGraph<I, D> {
+        AdjListGraph {
+            vertices: HashMap::new()
+        }
+    }
+    
+    pub fn new_with_capacity(capactiy: uint) -> AdjListGraph<I, D> {
+        AdjListGraph {
+            vertices: HashMap::with_capacity(capactiy)
+        }
+    }
+    
+}
+
+impl<I, D> Vertex<I, D> {
+    pub fn new(id: I, data: D) -> Vertex<I, D> {
+        Vertex {
+            id: id,
+            data: data,
+            neighbours: Vec::new(),
+        }
+    }
+}
+
+impl<I> AdjListNode<I> {
+    pub fn new(vertex_id: I) -> AdjListNode<I> {
+        AdjListNode {
+            vertex_id: vertex_id,
+            weight: 0
+        }
+    }
+    
+    pub fn new_with_weight(vertex_id: I, weight: int) -> AdjListNode<I> {
+        AdjListNode {
+            vertex_id: vertex_id,
+            weight: weight
+        }
+    }
+}
+
+impl<I> GraphPath<I> {
+    pub fn new() -> GraphPath<I> {
+        GraphPath {
+            distance: 0,
+            path: Vec::new()
+        }
+    }
+    
+    pub fn set_distance(&mut self, distance: int) -> () {
+        self.distance = distance;
+    }
+    
+    pub fn set_path(&mut self, path: Vec<I>) -> () {
+        self.path = path;
+    }
+    
+    pub fn get_distance(& self) -> int {
+        self.distance
+    }
+    
+    pub fn get_path(& self) -> &Vec<I> {
+        &self.path
+    }
 }
