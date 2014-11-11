@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-#![allow(unused_variable)]
+#![allow(unused_variables)]
 extern crate collections;
 extern crate core;
 
@@ -100,26 +100,26 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
                 distance: int::MAX
             });
         }
-        match metadata.find_mut(start_vertex) {
+        match metadata.get_mut(start_vertex) {
             Some(ref mut x) => x.distance = 0,
             None => ()
         }
         
         let mut min_id: I = start_vertex.clone();
         while !vertices.is_empty() {
-            if metadata.find(target_vertex).unwrap().visited {
+            if metadata.get(target_vertex).unwrap().visited {
                 break;
             }
             
             let mut min = int::MAX;
             for id in vertices.iter() {
-                if metadata.find(id).unwrap().distance <= min {
-                    min = metadata.find(id).unwrap().distance;
+                if metadata.get(id).unwrap().distance <= min {
+                    min = metadata.get(id).unwrap().distance;
                     min_id = id.clone();
                 }
             }
             
-            metadata.find_mut(&min_id).unwrap().visited = true;
+            metadata.get_mut(&min_id).unwrap().visited = true;
             for i in range(0, vertices.len()) {
                 if vertices[i] == min_id {
                     vertices.remove(i);
@@ -128,24 +128,24 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             }
             
             for id in self.get_vertex_neighbours(&min_id).iter() {
-                if !metadata.find(id).unwrap().visited {
-                    if metadata.find(id).unwrap().distance > (metadata.find(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
-                        metadata.find_mut(id).unwrap().distance = metadata.find(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
-                        metadata.find_mut(id).unwrap().predecessor = Some(min_id.clone());
+                if !metadata.get(id).unwrap().visited {
+                    if metadata.get(id).unwrap().distance > (metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
+                        metadata.get_mut(id).unwrap().distance = metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
+                        metadata.get_mut(id).unwrap().predecessor = Some(min_id.clone());
                     }
                 }
             }
         }
         
         let mut result: GraphPath<I> = GraphPath::new();
-        result.set_distance(metadata.find(target_vertex).unwrap().distance);
+        result.set_distance(metadata.get(target_vertex).unwrap().distance);
         
         let mut path: Vec<I> = Vec::new();
         let mut last: &I = target_vertex;
         
         while *last != *start_vertex {
             path.insert(0, last.clone());
-            last = metadata.find(last).unwrap().predecessor.as_ref().unwrap();
+            last = metadata.get(last).unwrap().predecessor.as_ref().unwrap();
         }
         
         path.insert(0, start_vertex.clone());
@@ -171,7 +171,7 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
                 distance: int::MAX
             });
         }
-        match metadata.find_mut(start_vertex) {
+        match metadata.get_mut(start_vertex) {
             Some(ref mut x) => x.distance = 0,
             None => ()
         }
@@ -181,13 +181,13 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             
             let mut min = int::MAX;
             for id in vertices.iter() {
-                if metadata.find(id).unwrap().distance <= min {
-                    min = metadata.find(id).unwrap().distance;
+                if metadata.get(id).unwrap().distance <= min {
+                    min = metadata.get(id).unwrap().distance;
                     min_id = id.clone();
                 }
             }
             
-            metadata.find_mut(&min_id).unwrap().visited = true;
+            metadata.get_mut(&min_id).unwrap().visited = true;
             for i in range(0, vertices.len()) {
                 if vertices[i] == min_id {
                     vertices.remove(i);
@@ -196,10 +196,10 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             }
             
             for id in self.get_vertex_neighbours(&min_id).iter() {
-                if !metadata.find(id).unwrap().visited {
-                    if metadata.find(id).unwrap().distance > (metadata.find(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
-                        metadata.find_mut(id).unwrap().distance = metadata.find(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
-                        metadata.find_mut(id).unwrap().predecessor = Some(min_id.clone());
+                if !metadata.get(id).unwrap().visited {
+                    if metadata.get(id).unwrap().distance > (metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
+                        metadata.get_mut(id).unwrap().distance = metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
+                        metadata.get_mut(id).unwrap().predecessor = Some(min_id.clone());
                     }
                 }
             }
@@ -208,14 +208,14 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         let mut result: HashMap<I, GraphPath<I>> = HashMap::new();
         for id in vertices_copy.iter() {
             let mut shortest_path: GraphPath<I> = GraphPath::new();
-            shortest_path.set_distance(metadata.find(id).unwrap().distance);
+            shortest_path.set_distance(metadata.get(id).unwrap().distance);
             
             let mut path: Vec<I> = Vec::new();
             let mut last: &I = id;
             
             while *last != *start_vertex {
                 path.insert(0, last.clone());
-                last = metadata.find(last).unwrap().predecessor.as_ref().unwrap();
+                last = metadata.get(last).unwrap().predecessor.as_ref().unwrap();
             }
             
             path.insert(0, start_vertex.clone());
@@ -269,7 +269,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
     
     fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> () {
-        let vertex = self.vertices.find_mut(&start_vertex);
+        let vertex = self.vertices.get_mut(&start_vertex);
         let adj_list_node = AdjListNode::new(end_vertex);
         
         match vertex {
@@ -284,7 +284,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
     
     fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> () {
-        let vertex = self.vertices.find_mut(&start_vertex);
+        let vertex = self.vertices.get_mut(&start_vertex);
         let adj_list_node = AdjListNode::new_with_weight(end_vertex, weight);
         
         match vertex {
@@ -307,7 +307,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
     
     fn get_vertex_data(& self, vertex_id: &I) -> Option<& D>{
-        let vertex = self.vertices.find(vertex_id);
+        let vertex = self.vertices.get(vertex_id);
         
         match vertex {
             Some(v) => Some(& v.data),
@@ -316,7 +316,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
 
     fn get_vertex_neighbours(& self, vertex_id: &I) -> Vec<I> {
-        let vertex = self.vertices.find(vertex_id);
+        let vertex = self.vertices.get(vertex_id);
         let empty_list = Vec::new();
         
         let neighbour_nodes = match vertex {
@@ -333,7 +333,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
     
     fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> int {
-        let vertex = self.vertices.find(start_vertex);
+        let vertex = self.vertices.get(start_vertex);
         let empty_list = Vec::new();
         let mut result = -1;
         
@@ -353,7 +353,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
     
     fn is_adjacent(& self, start_vertex: &I, end_vertex: &I) -> bool {
-        let vertex = self.vertices.find(start_vertex);
+        let vertex = self.vertices.get(start_vertex);
         let empty_list = Vec::new();
         let mut result = false;
         
@@ -373,7 +373,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     }
     
     fn is_id_in_graph(& self, vertex_id: &I) -> bool {
-        match self.vertices.find(vertex_id) {
+        match self.vertices.get(vertex_id) {
             Some(_) => true,
             None => false
         }
