@@ -39,6 +39,7 @@ pub struct GraphPath<I> {
     path: Vec<I>
 }
 
+#[deriving(Clone)]
 struct MetadataDijsktra<I> {
     predecessor: Option<I>,
     visited: bool,
@@ -67,91 +68,58 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     fn is_adjacent(& self, start_vertex: &I, end_vertex: &I) -> bool;
     
     fn is_id_in_graph(& self, vertex_id: &I) -> bool;
-    
-    // fn breadth_first_search(& self) -> () {
-    //     // add code here
-    // }
-
-    // fn depth_first_search(& self) -> () {
-    //     // add code here
-    // }
-
-    // fn breadth_first_search_from_index(& self, start_vertex: I) -> () {
-    //     // add code here
-    // }
-
-    // fn depth_first_search_from_index(& self, start_vertex: I) -> () {
-    //     // add code here
-    // }
 
     fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> GraphPath<I> {
         if !self.is_id_in_graph(start_vertex) || !self.is_id_in_graph(target_vertex) {
             return GraphPath::new();
         }
         
-        let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
+        let mut metadata: HashMap<I, MetadataDijsktra<I>>;
         let mut vertices: Vec<I> = self.get_vertex_ids();
         
-        for id in vertices.iter() {
-            let id_val = id.clone();
-            metadata.insert(id_val, MetadataDijsktra {
-                predecessor: None,
-                visited: false,
-                distance: int::MAX
-            });
-        }
-        match metadata.get_mut(start_vertex) {
-            Some(ref mut x) => x.distance = 0,
-            None => ()
+        match create_dijkstra_metadata(&vertices, start_vertex) {
+            Ok(x) => metadata = x,
+            Err(e) => return GraphPath::new()
         }
         
-        let mut min_id: I = start_vertex.clone();
+        let mut min_id: I;
         while !vertices.is_empty() {
-            if metadata.get(target_vertex).unwrap().visited {
-                break;
-            }
-            
-            let mut min = int::MAX;
-            for id in vertices.iter() {
-                if metadata.get(id).unwrap().distance <= min {
-                    min = metadata.get(id).unwrap().distance;
-                    min_id = id.clone();
-                }
-            }
-            
-            metadata.get_mut(&min_id).unwrap().visited = true;
-            for i in range(0, vertices.len()) {
-                if vertices[i] == min_id {
-                    vertices.remove(i);
-                    break;
-                }
-            }
-            
-            for id in self.get_vertex_neighbours(&min_id).iter() {
-                if !metadata.get(id).unwrap().visited {
-                    if metadata.get(id).unwrap().distance > (metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
-                        metadata.get_mut(id).unwrap().distance = metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
-                        metadata.get_mut(id).unwrap().predecessor = Some(min_id.clone());
+            match metadata.get(target_vertex) {
+                Some(ref x) => {
+                    if x.visited {
+                        break;
                     }
-                }
+                },
+                None => return GraphPath::new()
+            }
+            
+            match get_min_distance(&vertices, &metadata) {
+                Ok(x) => min_id = x,
+                Err(e) => return GraphPath::new()
+            }
+            
+            match metadata.get_mut(&min_id) {
+                Some(ref mut x) => x.visited = true,
+                None => return GraphPath::new()
+            }
+            
+            match metadata.get_mut(&min_id) {
+                Some(ref mut x) => x.visited = true,
+                None => return GraphPath::new()
+            }
+
+            remove_from_list(&mut vertices, &min_id);
+            
+            match perform_edge_relaxation(self, &mut metadata, &min_id) {
+                Ok(x) => (),
+                Err(e) => return GraphPath::new() 
             }
         }
         
-        let mut result: GraphPath<I> = GraphPath::new();
-        result.set_distance(metadata.get(target_vertex).unwrap().distance);
-        
-        let mut path: Vec<I> = Vec::new();
-        let mut last: &I = target_vertex;
-        
-        while *last != *start_vertex {
-            path.insert(0, last.clone());
-            last = metadata.get(last).unwrap().predecessor.as_ref().unwrap();
+        match backtrack_vertex_predecessor(&metadata, start_vertex, target_vertex) {
+            Ok(x) => x,
+            Err(e) => GraphPath::new()
         }
-        
-        path.insert(0, start_vertex.clone());
-        
-        result.set_path(path);
-        result
     }
 
     fn dijkstras_shortest_paths(& self, start_vertex: &I) -> HashMap<I, GraphPath<I>> {
@@ -159,82 +127,60 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             return HashMap::new();
         }
         
-        let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
+        let mut metadata: HashMap<I, MetadataDijsktra<I>>;
         let mut vertices: Vec<I> = self.get_vertex_ids();
         let vertices_copy: Vec<I> = vertices.clone();
         
-        for id in vertices.iter() {
-            let id_val = id.clone();
-            metadata.insert(id_val, MetadataDijsktra {
-                predecessor: None,
-                visited: false,
-                distance: int::MAX
-            });
-        }
-        match metadata.get_mut(start_vertex) {
-            Some(ref mut x) => x.distance = 0,
-            None => ()
+        match create_dijkstra_metadata(&vertices, start_vertex) {
+            Ok(x) => metadata = x,
+            Err(e) => return HashMap::new()
         }
         
-        let mut min_id: I = start_vertex.clone();
+        let mut min_id: I;
         while !vertices.is_empty() {
-            
-            let mut min = int::MAX;
-            for id in vertices.iter() {
-                if metadata.get(id).unwrap().distance <= min {
-                    min = metadata.get(id).unwrap().distance;
-                    min_id = id.clone();
-                }
+            match get_min_distance(&vertices, &metadata) {
+                Ok(x) => min_id = x,
+                Err(e) => return HashMap::new()
             }
             
-            metadata.get_mut(&min_id).unwrap().visited = true;
-            for i in range(0, vertices.len()) {
-                if vertices[i] == min_id {
-                    vertices.remove(i);
-                    break;
-                }
+            match metadata.get_mut(&min_id) {
+                Some(ref mut x) => x.visited = true,
+                None => return HashMap::new()
             }
             
-            for id in self.get_vertex_neighbours(&min_id).iter() {
-                if !metadata.get(id).unwrap().visited {
-                    if metadata.get(id).unwrap().distance > (metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id)) {
-                        metadata.get_mut(id).unwrap().distance = metadata.get(&min_id).unwrap().distance+self.get_edge_weight(&min_id, id);
-                        metadata.get_mut(id).unwrap().predecessor = Some(min_id.clone());
-                    }
-                }
+            match metadata.get_mut(&min_id) {
+                Some(ref mut x) => x.visited = true,
+                None => return HashMap::new()
+            }
+
+            remove_from_list(&mut vertices, &min_id);
+            
+            match perform_edge_relaxation(self, &mut metadata, &min_id) {
+                Ok(x) => (),
+                Err(e) => return HashMap::new() 
             }
         }
         
         let mut result: HashMap<I, GraphPath<I>> = HashMap::new();
         for id in vertices_copy.iter() {
-            let mut shortest_path: GraphPath<I> = GraphPath::new();
-            shortest_path.set_distance(metadata.get(id).unwrap().distance);
-            
-            let mut path: Vec<I> = Vec::new();
-            let mut last: &I = id;
-            
-            while *last != *start_vertex {
-                path.insert(0, last.clone());
-                last = metadata.get(last).unwrap().predecessor.as_ref().unwrap();
-            }
-            
-            path.insert(0, start_vertex.clone());
-            shortest_path.set_path(path);
-            
-            result.insert(id.clone(), shortest_path);
+            result.insert(id.clone(), 
+                match backtrack_vertex_predecessor(&metadata, start_vertex, id) {
+                    Ok(x) => x,
+                    Err(e) => GraphPath::new()
+            });
         }
         
         result
     }
 
-    fn graph_diameter_path(& self) -> Vec<I> {
-        // add code here
-        Vec::new()
-    }
-
-    fn graph_diameter_length(& self) -> int {
-        // add code here
-        0
+    fn graph_diameter_path(& self) -> GraphPath<I>{
+        let vertices: Vec<I> = self.get_vertex_ids();
+        
+        for id in vertices.iter() {
+            
+        }
+        
+        GraphPath::new()
     }
 
     fn k_core_decomposition(& self) -> Vec<KCoreDecomposition<I>> {
@@ -445,4 +391,108 @@ impl<I> GraphPath<I> {
     pub fn get_path(& self) -> &Vec<I> {
         &self.path
     }
+}
+
+fn create_dijkstra_metadata<I: Eq + Hash + Clone>(vertices: &Vec<I>, start_vertex: &I) -> Result<HashMap<I, MetadataDijsktra<I>>, String> {
+        let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
+                
+        for id in vertices.iter() {
+            let id_val = id.clone();
+            metadata.insert(id_val, MetadataDijsktra {
+                predecessor: None,
+                visited: false,
+                distance: int::MAX
+            });
+        }
+        
+        match metadata.get_mut(start_vertex) {
+            Some(ref mut x) => x.distance = 0,
+            None => return Err(String::from_str("An error occured while initialising the metadata"))
+        }
+        
+        Ok(metadata)
+}
+
+fn get_min_distance<I: Eq + Hash + Clone>(vertices: &Vec<I>, metadata: &HashMap<I, MetadataDijsktra<I>>) -> Result<I, String> {
+    let mut min = int::MAX;
+    let mut min_id = vertices[0].clone();
+    
+    for id in vertices.iter() {
+        let id_meta;
+        match metadata.get(id) {
+            Some(x) => id_meta = x,
+            None => return Err(String::from_str("An error occured while attempting to find a minimum distance"))
+        }
+        
+        if id_meta.distance <= min {
+            min = id_meta.distance;
+            min_id = id.clone();
+        }
+    }
+    
+    Ok(min_id)
+}
+
+fn remove_from_list<I: Eq>(vertices: &mut Vec<I>, id: &I) -> () {
+    for i in range(0, vertices.len()) {
+        if vertices[i] == *id {
+            vertices.remove(i);
+            break;
+        }
+    }
+}
+
+fn perform_edge_relaxation<I: Eq + Hash + Clone, D, G: Graph<I, D>>(graph: &G, metadata: &mut HashMap<I, MetadataDijsktra<I>>, min_id: &I) -> Result<(), String> {
+    for id in graph.get_vertex_neighbours(min_id).iter() {
+        let min_id_meta;
+        match metadata.find_copy(min_id) {
+            Some(x) => min_id_meta = x,
+            None => return Err(String::from_str("An error occured while performing edge relaxation"))
+        }
+        
+        let mut id_meta;
+        match metadata.get_mut(id) {
+            Some(x) => id_meta = x,
+            None => return Err(String::from_str("An error occured while performing edge relaxation"))
+        }
+        
+        if !id_meta.visited {
+            if id_meta.distance > (min_id_meta.distance + graph.get_edge_weight(min_id, id)) {
+                id_meta.distance = min_id_meta.distance + graph.get_edge_weight(min_id, id);
+                id_meta.predecessor = Some(min_id.clone());
+            }
+        }
+    }
+    
+    Ok(())
+}
+
+fn backtrack_vertex_predecessor<I: Eq + Hash + Clone>(metadata: &HashMap<I, MetadataDijsktra<I>>, start_vertex: &I, target_vertex: &I) -> Result<GraphPath<I>, String> {
+    let mut result: GraphPath<I> = GraphPath::new();
+    
+    match metadata.get(target_vertex) {
+        Some(ref x) => result.set_distance(x.distance),
+        None => return Err(String::from_str("An error occured while backtracking from a vertex"))
+    }
+    
+    let mut path: Vec<I> = Vec::new();
+    let mut last: &I = target_vertex;
+    
+    while *last != *start_vertex {
+        path.insert(0, last.clone());
+        match metadata.get(last) {
+            Some(ref x) =>  
+                match x.predecessor {
+                    Some(ref y) => last = y,
+                    None => return Err(String::from_str("An error occured while backtracking from a vertex"))
+                },
+            None => return Err(String::from_str("An error occured while backtracking from a vertex"))
+        }
+    }
+    
+    path.insert(0, start_vertex.clone());   
+    
+    result.set_path(path);
+    
+    Ok(result)
 }
