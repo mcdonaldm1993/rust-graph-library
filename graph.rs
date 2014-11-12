@@ -102,11 +102,6 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
                 Some(ref mut x) => x.visited = true,
                 None => return GraphPath::new()
             }
-            
-            match metadata.get_mut(&min_id) {
-                Some(ref mut x) => x.visited = true,
-                None => return GraphPath::new()
-            }
 
             remove_from_list(&mut vertices, &min_id);
             
@@ -141,11 +136,6 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             match get_min_distance(&vertices, &metadata) {
                 Ok(x) => min_id = x,
                 Err(e) => return HashMap::new()
-            }
-            
-            match metadata.get_mut(&min_id) {
-                Some(ref mut x) => x.visited = true,
-                None => return HashMap::new()
             }
             
             match metadata.get_mut(&min_id) {
