@@ -163,14 +163,23 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         result
     }
 
-    fn graph_diameter_path(& self) -> GraphPath<I>{
+    fn diameter_path(& self) -> GraphPath<I>{
         let vertices: Vec<I> = self.get_vertex_ids();
+        let mut longest_path: GraphPath<I> = GraphPath::new();
+        let mut longest_distance = int::MIN;
         
         for id in vertices.iter() {
+            let longest_paths = self.dijkstras_shortest_paths(id);
+            for path in longest_paths.values() {
+                if path.get_distance() > longest_distance {
+                    longest_path = path.clone();
+                    longest_distance = path.get_distance();
+                }
+            }
             
         }
         
-        GraphPath::new()
+        longest_path
     }
 
     fn k_core_decomposition(& self) -> Vec<KCoreDecomposition<I>> {
