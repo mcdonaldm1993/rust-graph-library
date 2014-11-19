@@ -10,7 +10,7 @@ use collections::hash::Hash;
 use core::cmp::Eq;
 
 #[deriving(Clone)]
-pub struct AdjListGraph<I, D> {
+pub struct UndirectedAdjListGraph<I, D> {
     vertices: HashMap<I, Vertex<I, D>>,
 }
 
@@ -52,10 +52,6 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> ();
     
     fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> ();
-    
-    fn add_undirected_edge(&mut self, start_vertex: I, end_vertex: I) -> ();
-    
-    fn add_undirected_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> ();
     
     fn get_vertex_ids(&self) -> Vec<I>;
     
@@ -187,60 +183,74 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         Vec::new()
     }
 
-    fn kruskal_min_spanning_tree(& self) -> AdjListGraph<I, D> {
-        // add code here
-        AdjListGraph {
-            vertices: HashMap::new()
-        }
-    }
+    // fn kruskal_min_spanning_tree(& self) -> UndirectedAdjListGraph<I, D> {
+    //     // add code here
+    //     UndirectedAdjListGraph {
+    //         vertices: HashMap::new()
+    //     }
+    // }
 
-    fn prims_min_spanning_tree(& self) -> AdjListGraph<I, D> {
-        // add code here
-        AdjListGraph {
-            vertices: HashMap::new()
-        }
-    }
+    // fn prims_min_spanning_tree(& self) -> UndirectedAdjListGraph<I, D> {
+    //     // add code here
+    //     UndirectedAdjListGraph {
+    //         vertices: HashMap::new()
+    //     }
+    // }
 
-    fn a_star_search(& self, start_vertex: I, target_vertex: I) -> Vec<I> {
-        // add code here
-        Vec::new()
-    }
+    // fn a_star_search(& self, start_vertex: I, target_vertex: I) -> Vec<I> {
+    //     // add code here
+    //     Vec::new()
+    // }
 }
 
-impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
+impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
     fn add_vertex(&mut self, vertex_id: I, data: D) -> () {
         let vertex = Vertex::new(vertex_id.clone(), data);
         self.vertices.insert(vertex_id, vertex);
     }
     
     fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> () {
-        let vertex = self.vertices.get_mut(&start_vertex);
-        let adj_list_node = AdjListNode::new(end_vertex);
+        {
+            let start_vertex_ref = self.vertices.get_mut(&start_vertex);
+            let end_vertex_adj_list_node = AdjListNode::new(end_vertex.clone());
+            
+            match start_vertex_ref {
+                Some(v) => v.neighbours.push(end_vertex_adj_list_node),
+                None => ()
+            };
+        }
         
-        match vertex {
-            Some(v) => v.neighbours.push(adj_list_node),
-            None => ()
-        };
-    }
-    
-    fn add_undirected_edge(&mut self, start_vertex: I, end_vertex: I) -> () {
-        self.add_edge(start_vertex.clone(), end_vertex.clone());
-        self.add_edge(end_vertex, start_vertex);
+        {
+            let end_vertex_ref = self.vertices.get_mut(&end_vertex);
+            let start_vertex_adj_list_node = AdjListNode::new(start_vertex);
+            
+            match end_vertex_ref {
+                Some(v) => v.neighbours.push(start_vertex_adj_list_node),
+                None => ()
+            };
+        }
     }
     
     fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> () {
-        let vertex = self.vertices.get_mut(&start_vertex);
-        let adj_list_node = AdjListNode::new_with_weight(end_vertex, weight);
+        {
+            let start_vertex_ref = self.vertices.get_mut(&start_vertex);
+            let end_vertex_adj_list_node = AdjListNode::new_with_weight(end_vertex.clone(), weight);
+            
+            match start_vertex_ref {
+                Some(v) => v.neighbours.push(end_vertex_adj_list_node),
+                None => ()
+            };
+        }
         
-        match vertex {
-            Some(v) => v.neighbours.push(adj_list_node),
-            None => ()
-        };
-    }
-    
-    fn add_undirected_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> () {
-        self.add_edge_with_weight(start_vertex.clone(), end_vertex.clone(), weight);
-        self.add_edge_with_weight(end_vertex.clone(), start_vertex.clone(), weight);
+        {
+            let end_vertex_ref = self.vertices.get_mut(&end_vertex);
+            let start_vertex_adj_list_node = AdjListNode::new_with_weight(start_vertex, weight);
+            
+            match end_vertex_ref {
+                Some(v) => v.neighbours.push(start_vertex_adj_list_node),
+                None => ()
+            };
+        }
     }
     
     fn get_vertex_ids(& self) -> Vec<I>{
@@ -326,15 +336,15 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for AdjListGraph<I, D> {
     
 }
 
-impl<I: Eq + Hash + Clone, D> AdjListGraph<I, D> {
-    pub fn new() -> AdjListGraph<I, D> {
-        AdjListGraph {
+impl<I: Eq + Hash + Clone, D> UndirectedAdjListGraph<I, D> {
+    pub fn new() -> UndirectedAdjListGraph<I, D> {
+        UndirectedAdjListGraph {
             vertices: HashMap::new()
         }
     }
     
-    pub fn new_with_capacity(capactiy: uint) -> AdjListGraph<I, D> {
-        AdjListGraph {
+    pub fn new_with_capacity(capactiy: uint) -> UndirectedAdjListGraph<I, D> {
+        UndirectedAdjListGraph {
             vertices: HashMap::with_capacity(capactiy)
         }
     }
