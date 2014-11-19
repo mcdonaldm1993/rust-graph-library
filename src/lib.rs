@@ -468,7 +468,7 @@ fn remove_from_list<I: Eq>(vertices: &mut Vec<I>, id: &I) -> () {
 fn perform_edge_relaxation<I: Eq + Hash + Clone, D, G: Graph<I, D>>(graph: &G, metadata: &mut HashMap<I, MetadataDijsktra<I>>, min_id: &I) -> Result<(), String> {
     for id in graph.get_vertex_neighbours(min_id).iter() {
         let min_id_meta;
-        match metadata.find_copy(min_id) {
+        match metadata.get(min_id).cloned() {
             Some(x) => min_id_meta = x,
             None => return Err(String::from_str("An error occured while performing edge relaxation"))
         }
