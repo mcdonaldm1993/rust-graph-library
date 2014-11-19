@@ -64,6 +64,8 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     fn is_adjacent(& self, start_vertex: &I, end_vertex: &I) -> bool;
     
     fn is_id_in_graph(& self, vertex_id: &I) -> bool;
+    
+    fn vertex_degree(& self, vertex_id: &I) -> Result<uint, String>;
 
     fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> GraphPath<I> {
         if !self.is_id_in_graph(start_vertex) || !self.is_id_in_graph(target_vertex) {
@@ -334,6 +336,14 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
         }
     }
     
+    fn vertex_degree(& self, vertex_id: &I) -> Result<uint, String> {
+        let vertex = self.vertices.get(vertex_id);
+        
+        match vertex {
+            Some(ref v) => Ok(v.vertex_degree()),
+            None => Err(String::from_str("An error occured while getting the vertex degree"))
+        }
+    }
 }
 
 impl<I: Eq + Hash + Clone, D> UndirectedAdjListGraph<I, D> {
@@ -358,6 +368,10 @@ impl<I, D> Vertex<I, D> {
             data: data,
             neighbours: Vec::new(),
         }
+    }
+    
+    pub fn vertex_degree(& self) -> uint {
+        self.neighbours.len()
     }
 }
 
