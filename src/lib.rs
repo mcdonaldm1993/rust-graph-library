@@ -27,9 +27,9 @@ struct AdjListNode<I> {
     weight: int
 }
 
-#[deriving(Clone)]
+#[deriving(Show, Clone)]
 pub struct KCoreDecomposition<I> {
-    k: int,
+    k: uint,
     vertices: Vec<I>
 }
 
@@ -44,6 +44,13 @@ struct MetadataDijsktra<I> {
     predecessor: Option<I>,
     visited: bool,
     distance: int
+}
+
+#[deriving(Clone)]
+struct MetadataKCore<I> {
+    id: I,
+    degree: uint,
+    core: uint
 }
 
 pub trait Graph<I: Eq + Hash + Clone, D> {
@@ -180,9 +187,57 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         longest_path
     }
 
-    fn k_core_decomposition(& self) -> Vec<KCoreDecomposition<I>> {
-        // add code here
-        Vec::new()
+    fn k_core_decomposition(& self) -> HashMap<uint, KCoreDecomposition<I>> {
+        let mut vertices: Vec<I> = self.get_vertex_ids();
+        let mut metadata: HashMap<I, MetadataKCore<I>> = HashMap::new();
+        let mut result: HashMap<uint, KCoreDecomposition<I>> = HashMap::new();
+        
+        for v in vertices.iter() {
+            metadata.insert(v.clone(), MetadataKCore {
+                id: v.clone(),
+                degree: match self.vertex_degree(v) {
+                    Ok(d) => d,
+                    Err(_) => 0
+                },
+                core: 0
+            });
+        }
+        
+        order_vertex_by_degree(&mut vertices, &metadata);
+        
+        loop {
+            let mut v;
+            match vertices.remove(0) {
+                None => break,
+                Some(x) => v = x
+            }
+            
+            let mut v_vertex_meta = metadata.get(&v).cloned().unwrap();
+            v_vertex_meta.core = v_vertex_meta.degree;
+            
+            if !result.contains_key(&v_vertex_meta.core) {
+                result.insert( v_vertex_meta.core, KCoreDecomposition { k: v_vertex_meta.core, vertices: Vec::new() } );
+            }
+            
+            match result.get_mut(&v_vertex_meta.core) {
+                None => (),
+                Some(x) => x.vertices.push(v.clone())
+            }
+            
+            let v_degree = v_vertex_meta.degree;
+            
+            for u in self.get_vertex_neighbours(&v).iter() {
+                let mut u_vertex_meta = metadata.get(u).cloned().unwrap();
+                
+                if u_vertex_meta.degree > v_degree {
+                    u_vertex_meta.degree = u_vertex_meta.degree-1;
+                    metadata.insert(u.clone(), u_vertex_meta);
+                    order_vertex_by_degree(&mut vertices, &metadata);
+                }
+            }
+        }
+        
+        result
     }
 
     // fn kruskal_min_spanning_tree(& self) -> UndirectedAdjListGraph<I, D> {
@@ -518,4 +573,22 @@ fn backtrack_vertex_predecessor<I: Eq + Hash + Clone>(metadata: &HashMap<I, Meta
     result.set_path(path);
     
     Ok(result)
+}
+
+fn order_vertex_by_degree<I: Eq + Hash + Clone>(vertices: &mut Vec<I>, metadata: &HashMap<I, MetadataKCore<I>>) -> () {
+    let mut n = vertices.len();
+    
+    loop {
+        let mut newn = 0;
+        for i in range(1, n) {
+            if metadata.get(&vertices[i-1]).unwrap().degree > metadata.get(&vertices[i]).unwrap().degree {
+                let a = vertices[i-1].clone();
+                vertices[i-1] = vertices[i].clone();
+                vertices[i] = a;
+                newn = i;
+            }
+        }
+        n = newn;
+        if n==0 { break; }
+    }
 }
