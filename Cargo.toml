@@ -1,4 +1,4 @@
 [package]
-name = "rust-graph" # the name of the package
-version = "0.0.1"    # the current version, obeying semver
+name = "graph"
+version = "0.0.1"
 authors = [ "mcdonaldm1993@gmail.com" ]
