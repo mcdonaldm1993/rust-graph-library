@@ -28,12 +28,6 @@ struct AdjListNode<I> {
 }
 
 #[deriving(Show, Clone)]
-pub struct KCoreDecomposition<I> {
-    k: uint,
-    vertices: Vec<I>
-}
-
-#[deriving(Show, Clone)]
 pub struct GraphPath<I> {
     distance: int,
     path: Vec<I>
@@ -187,10 +181,10 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         longest_path
     }
 
-    fn k_core_decomposition(& self) -> HashMap<uint, KCoreDecomposition<I>> {
+    fn k_core_decomposition(& self) -> HashMap<uint, Vec<I>> {
         let mut vertices: Vec<I> = self.get_vertex_ids();
         let mut metadata: HashMap<I, MetadataKCore<I>> = HashMap::new();
-        let mut result: HashMap<uint, KCoreDecomposition<I>> = HashMap::new();
+        let mut result: HashMap<uint, Vec<I>> = HashMap::new();
         
         for v in vertices.iter() {
             metadata.insert(v.clone(), MetadataKCore {
@@ -216,12 +210,12 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             v_vertex_meta.core = v_vertex_meta.degree;
             
             if !result.contains_key(&v_vertex_meta.core) {
-                result.insert( v_vertex_meta.core, KCoreDecomposition { k: v_vertex_meta.core, vertices: Vec::new() } );
+                result.insert( v_vertex_meta.core, Vec::new());
             }
             
             match result.get_mut(&v_vertex_meta.core) {
                 None => (),
-                Some(x) => x.vertices.push(v.clone())
+                Some(x) => x.push(v.clone())
             }
             
             let v_degree = v_vertex_meta.degree;
