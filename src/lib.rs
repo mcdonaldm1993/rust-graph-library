@@ -424,11 +424,12 @@ impl<I, D> Vertex<I, D> {
     }
 }
 
+
 impl<I> AdjListNode<I> {
     pub fn new(vertex_id: I) -> AdjListNode<I> {
         AdjListNode {
             vertex_id: vertex_id,
-            weight: 0
+            weight: 1
         }
     }
     
