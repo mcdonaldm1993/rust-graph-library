@@ -1,4 +1,4 @@
 [package]
 name = "graph"
 version = "0.0.1"
-authors = [ "mcdonaldm1993@gmail.com" ]
+authors = ["Michael McDonald <mcdonaldm1993@gmail.com>"]
