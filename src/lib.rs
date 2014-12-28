@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-extern crate collections;
 extern crate core;
 
 use std::vec::Vec;
 use std::int;
 use std::collections::HashMap;
-use collections::hash::Hash;
+use std::collections::HashSet;
+use std::hash::Hash;
 use core::cmp::Eq;
 
 #[deriving(Clone)]
