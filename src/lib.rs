@@ -9,66 +9,89 @@ use std::collections::HashSet;
 use std::hash::Hash;
 use core::cmp::Eq;
 
-#[deriving(Clone)]
+/// An undirected graph represented by an adjacency list.
+/// 
+/// The graph can be used both as a weighted or unweighted graph depending on which edge insertion operation is used.
+#[derive(Clone)]
 pub struct UndirectedAdjListGraph<I, D> {
     vertices: HashMap<I, Vertex<I, D>>,
 }
 
-#[deriving(Clone)]
+#[derive(Clone)]
 struct Vertex<I, D> {
     id: I,
     data: D,
     neighbours: Vec<AdjListNode<I>>,
 }
 
-#[deriving(Clone)]
+#[derive(Clone)]
 struct AdjListNode<I> {
     vertex_id: I,
     weight: int
 }
 
-#[deriving(Show, Clone)]
+/// A struct used to represent a path in a graph.
+///
+/// The struct contains the path of vertex IDs and the distance of the path.
+#[derive(Show, Clone)]
 pub struct GraphPath<I> {
     distance: int,
     path: Vec<I>
 }
 
-#[deriving(Clone)]
+#[derive(Clone)]
 struct MetadataDijsktra<I> {
     predecessor: Option<I>,
     visited: bool,
     distance: int
 }
 
-#[deriving(Clone)]
+#[derive(Clone)]
 struct MetadataKCore<I> {
     id: I,
     degree: uint,
     core: uint
 }
 
-
+/// The `Graph` trait is used to implement common operations on a graph and provide implementations of graph algorithms
+/// that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.
 pub trait Graph<I: Eq + Hash + Clone, D> {
+    /// The method to add a vertex to the graph.
     fn add_vertex(&mut self, vertex_id: I, data: D) -> ();
     
+    /// The method to add an edge to the graph between two vertices.
     fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> ();
     
+    /// The method to add an edge to the graph between two vertices, specifying a weight.
     fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> ();
     
+    /// The method to return a vector of IDs of all vertices in the graph.
     fn get_vertex_ids(&self) -> Vec<I>;
     
+    /// The method to retrieve the data associated with a vertex.
     fn get_vertex_data(& self, vertex_id: &I) -> Option<& D>;
     
+    /// The method to get the list of vertices that are adjacent to a vertex.
     fn get_vertex_neighbours(& self, vertex_id: &I) -> Vec<I>;
     
+    /// The method to get the weight of an edge between two vertices.
     fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> int;
     
+    /// The method to check if two vertices are adjacent.
     fn is_adjacent(& self, start_vertex: &I, end_vertex: &I) -> bool;
     
+    /// The method to check if a vertex is in the graph.
     fn is_id_in_graph(& self, vertex_id: &I) -> bool;
     
+    /// The method to return the degree of a vertex.
     fn vertex_degree(& self, vertex_id: &I) -> Result<uint, String>;
 
+    /// Performs Dijkstra's shortest path algorithm on the graph.
+    ///
+    /// Returns the `GraphPath` between the two vertices and will end prematurely once the path has been found.
+    /// The `GraphPath` will be empty if an error occured during the algorithm.
+    /// 
+    /// This algorithm runs in worst case O(V<sup>2</sup>) time.
     fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> GraphPath<I> {
         if !self.is_id_in_graph(start_vertex) || !self.is_id_in_graph(target_vertex) {
             return GraphPath::new();
@@ -116,7 +139,13 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             Err(e) => GraphPath::new()
         }
     }
-
+    
+    /// Performs Dijkstra's shortest path algorithm on the graph.
+    ///
+    /// Returns a `HashMap` of target vertices to the `GraphPath` between the vertex and the target vertex.
+    /// The `HashMap` will be empty if an error occured.
+    /// 
+    /// This algorithm runs in worst case O(V<sup>2</sup>) time.
     fn dijkstras_shortest_paths(& self, start_vertex: &I) -> HashMap<I, GraphPath<I>> {
         if !self.is_id_in_graph(start_vertex) {
             return HashMap::new();
@@ -163,6 +192,12 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         result
     }
 
+    /// Finds the diameter of the graph.
+    ///
+    /// Returns a `GraphPath` of the path that determined the diameter of the graph.
+    ///
+    /// This uses the dijkstras_shortest_paths function to get all shortest paths pairs and find the longest.
+    /// This algorithm runs in O(V<sup>3</sup>) time.
     fn diameter_path(& self) -> GraphPath<I>{
         let vertices: Vec<I> = self.get_vertex_ids();
         let mut longest_path: GraphPath<I> = GraphPath::new();
@@ -182,6 +217,11 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
         longest_path
     }
 
+    /// Finds the k core of each vertex in the graph.
+    ///
+    /// Returns a `HashMap` with the core as a key and a vector of all vertex IDs in that core as a value.
+    ///
+    /// This algorithm runs in O(E) time.
     fn k_core_decomposition(& self) -> HashMap<uint, Vec<I>> {
         let mut vertices: Vec<I> = self.get_vertex_ids();
         let mut metadata: HashMap<I, MetadataKCore<I>> = HashMap::new();
@@ -262,6 +302,10 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
         self.vertices.insert(vertex_id, vertex);
     }
     
+    /// Adds an edge to the graph between the two vertices.
+    ///
+    /// This is added with a weight of 1.
+    /// Use only this if you want to use the graph as unweighted.
     fn add_edge(&mut self, start_vertex: I, end_vertex: I) -> () {
         {
             let start_vertex_ref = self.vertices.get_mut(&start_vertex);
@@ -284,6 +328,10 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
         }
     }
     
+    /// Adds an edge to the graph between the two vertices.
+    ///
+    /// This is added with the weight specified.
+    /// Use only this if you want to use the graph as weighted.
     fn add_edge_with_weight(&mut self, start_vertex: I, end_vertex: I, weight: int) -> () {
         {
             let start_vertex_ref = self.vertices.get_mut(&start_vertex);
@@ -399,12 +447,14 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
 
 
 impl<I: Eq + Hash + Clone, D> UndirectedAdjListGraph<I, D> {
+    /// Creates a new emtpy `UndirectedAdjListGraph<I, D>`.
     pub fn new() -> UndirectedAdjListGraph<I, D> {
         UndirectedAdjListGraph {
             vertices: HashMap::new()
         }
     }
     
+    /// Creates a new empty `UndirectedAdjListGraph<I, D>` with the given initial capacity.
     pub fn new_with_capacity(capactiy: uint) -> UndirectedAdjListGraph<I, D> {
         UndirectedAdjListGraph {
             vertices: HashMap::with_capacity(capactiy)
@@ -446,25 +496,29 @@ impl<I> AdjListNode<I> {
 
 
 impl<I> GraphPath<I> {
-    pub fn new() -> GraphPath<I> {
+    fn new() -> GraphPath<I> {
         GraphPath {
             distance: 0,
             path: Vec::new()
         }
     }
     
-    pub fn set_distance(&mut self, distance: int) -> () {
+    fn set_distance(&mut self, distance: int) -> () {
         self.distance = distance;
     }
     
-    pub fn set_path(&mut self, path: Vec<I>) -> () {
+    fn set_path(&mut self, path: Vec<I>) -> () {
         self.path = path;
     }
     
+    /// Retrieves the distance of the `GraphPath`
     pub fn get_distance(& self) -> int {
         self.distance
     }
     
+    /// Retrieves the path.
+    ///
+    /// This is a vector of vertex IDs that are in order of visitation.
     pub fn get_path(& self) -> &Vec<I> {
         &self.path
     }
