@@ -223,28 +223,39 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     ///
     /// This algorithm runs in O(E) time.
     fn k_core_decomposition(& self) -> HashMap<uint, Vec<I>> {
-        let mut vertices: Vec<I> = self.get_vertex_ids();
+        let mut buckets: HashMap<uint, HashSet<I>> = HashMap::new();
         let mut metadata: HashMap<I, MetadataKCore<I>> = HashMap::new();
         let mut result: HashMap<uint, Vec<I>> = HashMap::new();
+        let mut max_degree: uint = 0;
+        let mut current_core: uint = 0;
         
-        for v in vertices.iter() {
+        for v in self.get_vertex_ids().iter() {
+            let degree = match self.vertex_degree(v) {
+                Ok(d) => d,
+                Err(_) => 0
+            };
+            
+            if !buckets.contains_key(&degree) {
+                buckets.insert(degree, HashSet::new());
+            }
+            
+            buckets.get_mut(&degree).unwrap().insert(v.clone());
+            
             metadata.insert(v.clone(), MetadataKCore {
                 id: v.clone(),
-                degree: match self.vertex_degree(v) {
-                    Ok(d) => d,
-                    Err(_) => 0
-                },
+                degree: degree,
                 core: 0
             });
+            
+            if degree > max_degree { max_degree = degree };            
         }
         
-        order_vertex_by_degree(&mut vertices, &metadata);
-        
         loop {
-            let mut v;
-            match vertices.remove(0) {
-                None => break,
-                Some(x) => v = x
+            let mut v: I;
+            
+            match get_next_vertex(&mut buckets, &mut current_core) {
+                Ok(vertex) => v = vertex,
+                Err(_) => if current_core == max_degree { break; } else { continue; }
             }
             
             let mut v_vertex_meta = metadata.get(&v).cloned().unwrap();
@@ -260,14 +271,31 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             }
             
             let v_degree = v_vertex_meta.degree;
-            
+
             for u in self.get_vertex_neighbours(&v).iter() {
                 let mut u_vertex_meta = metadata.get(u).cloned().unwrap();
                 
                 if u_vertex_meta.degree > v_degree {
+                    {
+                        match buckets.get_mut(&u_vertex_meta.degree) {
+                            Some(bucket) => { bucket.remove(u); },
+                            None => { continue; }
+                        }
+                    }
+                    
                     u_vertex_meta.degree = u_vertex_meta.degree-1;
+                    
+                    {
+                        if buckets.contains_key(& (u_vertex_meta.degree)) {
+                            buckets.get_mut(& (u_vertex_meta.degree-1)).unwrap().insert(u.clone());
+                        } else {
+                            let mut hashset = HashSet::new();
+                            hashset.insert(u.clone());
+                            buckets.insert(u_vertex_meta.degree, hashset);
+                        }
+                    }
+                    
                     metadata.insert(u.clone(), u_vertex_meta);
-                    order_vertex_by_degree(&mut vertices, &metadata);
                 }
             }
         }
@@ -628,20 +656,28 @@ fn backtrack_vertex_predecessor<I: Eq + Hash + Clone>(metadata: &HashMap<I, Meta
     Ok(result)
 }
 
-fn order_vertex_by_degree<I: Eq + Hash + Clone>(vertices: &mut Vec<I>, metadata: &HashMap<I, MetadataKCore<I>>) -> () {
-    let mut n = vertices.len();
+fn get_next_vertex<I: Eq + Hash + Clone>(buckets: &mut HashMap<uint, HashSet<I>>, current_core: &mut uint) -> Result<I, ()> {
+    let current_core_bucket;
     
-    loop {
-        let mut newn = 0;
-        for i in range(1, n) {
-            if metadata.get(&vertices[i-1]).unwrap().degree > metadata.get(&vertices[i]).unwrap().degree {
-                let a = vertices[i-1].clone();
-                vertices[i-1] = vertices[i].clone();
-                vertices[i] = a;
-                newn = i;
-            }
+    match buckets.get_mut(current_core) {
+        Some(bucket) => { current_core_bucket = bucket; },
+        None => { *current_core += 1; return Err(()); }
+    }
+    
+    if !current_core_bucket.is_empty() { 
+        let mut v = None;
+        
+        for x in current_core_bucket.iter() {
+            v = Some(x.clone());
+            break;
         }
-        n = newn;
-        if n==0 { break; }
+        
+        match v {
+            Some (vector) => { current_core_bucket.remove(&vector); return Ok(vector); },
+            None =>{ return Err(()); }
+        }
+    } else {
+        *current_core += 1;
+        Err(())
     }
 }
