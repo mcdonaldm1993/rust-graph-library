@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
 extern crate core;
 
 use std::vec::Vec;
@@ -9,36 +7,7 @@ use std::collections::HashSet;
 use std::hash::Hash;
 use core::cmp::Eq;
 
-/// An undirected graph represented by an adjacency list.
-/// 
-/// The graph can be used both as a weighted or unweighted graph depending on which edge insertion operation is used.
-#[derive(Clone)]
-pub struct UndirectedAdjListGraph<I, D> {
-    vertices: HashMap<I, Vertex<I, D>>,
-}
-
-#[derive(Clone)]
-struct Vertex<I, D> {
-    id: I,
-    data: D,
-    neighbours: Vec<AdjListNode<I>>,
-}
-
-#[derive(Clone)]
-struct AdjListNode<I> {
-    vertex_id: I,
-    weight: int
-}
-
-/// A struct used to represent a path in a graph.
-///
-/// The struct contains the path of vertex IDs and the distance of the path.
-#[derive(Show, Clone)]
-pub struct GraphPath<I> {
-    distance: int,
-    path: Vec<I>
-}
-
+/// A struct used to store data used during the execution of Dijkstra's algorithm
 #[derive(Clone)]
 struct MetadataDijsktra<I> {
     predecessor: Option<I>,
@@ -46,6 +15,7 @@ struct MetadataDijsktra<I> {
     distance: int
 }
 
+/// A struct used to store data used during the execution of the K core decomposition algorithm
 #[derive(Clone)]
 struct MetadataKCore<I> {
     id: I,
@@ -324,6 +294,71 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
 }
 
 
+
+/// A struct used to represent a path in a graph.
+///
+/// The struct contains the path of vertex IDs and the distance of the path.
+#[derive(Show, Clone)]
+pub struct GraphPath<I> {
+    distance: int,
+    path: Vec<I>
+}
+
+impl<I> GraphPath<I> {
+    fn new() -> GraphPath<I> {
+        GraphPath {
+            distance: 0,
+            path: Vec::new()
+        }
+    }
+    
+    fn set_distance(&mut self, distance: int) -> () {
+        self.distance = distance;
+    }
+    
+    fn set_path(&mut self, path: Vec<I>) -> () {
+        self.path = path;
+    }
+    
+    /// Retrieves the distance of the `GraphPath`
+    pub fn get_distance(& self) -> int {
+        self.distance
+    }
+    
+    /// Retrieves the path.
+    ///
+    /// This is a vector of vertex IDs that are in order of visitation.
+    pub fn get_path(& self) -> &Vec<I> {
+        &self.path
+    }
+}
+
+
+
+/// An undirected graph represented by an adjacency list.
+/// 
+/// The graph can be used both as a weighted or unweighted graph depending on which edge insertion operation is used.
+#[derive(Clone)]
+pub struct UndirectedAdjListGraph<I, D> {
+    vertices: HashMap<I, Vertex<I, D>>,
+}
+
+impl<I: Eq + Hash + Clone, D> UndirectedAdjListGraph<I, D> {
+    /// Creates a new emtpy `UndirectedAdjListGraph<I, D>`.
+    pub fn new() -> UndirectedAdjListGraph<I, D> {
+        UndirectedAdjListGraph {
+            vertices: HashMap::new()
+        }
+    }
+    
+    /// Creates a new empty `UndirectedAdjListGraph<I, D>` with the given initial capacity.
+    pub fn new_with_capacity(capactiy: uint) -> UndirectedAdjListGraph<I, D> {
+        UndirectedAdjListGraph {
+            vertices: HashMap::with_capacity(capactiy)
+        }
+    }
+}
+
 impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
     fn add_vertex(&mut self, vertex_id: I, data: D) -> () {
         let vertex = Vertex::new(vertex_id.clone(), data);
@@ -474,22 +509,14 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
 }
 
 
-impl<I: Eq + Hash + Clone, D> UndirectedAdjListGraph<I, D> {
-    /// Creates a new emtpy `UndirectedAdjListGraph<I, D>`.
-    pub fn new() -> UndirectedAdjListGraph<I, D> {
-        UndirectedAdjListGraph {
-            vertices: HashMap::new()
-        }
-    }
-    
-    /// Creates a new empty `UndirectedAdjListGraph<I, D>` with the given initial capacity.
-    pub fn new_with_capacity(capactiy: uint) -> UndirectedAdjListGraph<I, D> {
-        UndirectedAdjListGraph {
-            vertices: HashMap::with_capacity(capactiy)
-        }
-    }
-}
 
+/// Struct used to store vertex data in the `UndirectedAdjListGraph`
+#[derive(Clone)]
+struct Vertex<I, D> {
+    id: I,
+    data: D,
+    neighbours: Vec<AdjListNode<I>>,
+}
 
 impl<I, D> Vertex<I, D> {
     pub fn new(id: I, data: D) -> Vertex<I, D> {
@@ -505,6 +532,14 @@ impl<I, D> Vertex<I, D> {
     }
 }
 
+
+
+// Struct used to store a vertex ID and weight associated with it in the adjacency list of the `UndirectedAdjListGraph`
+#[derive(Clone)]
+struct AdjListNode<I> {
+    vertex_id: I,
+    weight: int
+}
 
 impl<I> AdjListNode<I> {
     pub fn new(vertex_id: I) -> AdjListNode<I> {
@@ -523,34 +558,10 @@ impl<I> AdjListNode<I> {
 }
 
 
-impl<I> GraphPath<I> {
-    fn new() -> GraphPath<I> {
-        GraphPath {
-            distance: 0,
-            path: Vec::new()
-        }
-    }
-    
-    fn set_distance(&mut self, distance: int) -> () {
-        self.distance = distance;
-    }
-    
-    fn set_path(&mut self, path: Vec<I>) -> () {
-        self.path = path;
-    }
-    
-    /// Retrieves the distance of the `GraphPath`
-    pub fn get_distance(& self) -> int {
-        self.distance
-    }
-    
-    /// Retrieves the path.
-    ///
-    /// This is a vector of vertex IDs that are in order of visitation.
-    pub fn get_path(& self) -> &Vec<I> {
-        &self.path
-    }
-}
+
+////////////////////////////////////////////////////////////////////////////////
+// Private functions used in the graph trait provided functions
+////////////////////////////////////////////////////////////////////////////////
 
 fn create_dijkstra_metadata<I: Eq + Hash + Clone>(vertices: &Vec<I>, start_vertex: &I) -> Result<HashMap<I, MetadataDijsktra<I>>, String> {
         let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
