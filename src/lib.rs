@@ -45,7 +45,7 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     fn get_vertex_neighbours(& self, vertex_id: &I) -> Vec<I>;
     
     /// The method to get the weight of an edge between two vertices.
-    fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> int;
+    fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> Result<int, String>;
     
     /// The method to check if two vertices are adjacent.
     fn is_adjacent(& self, start_vertex: &I, end_vertex: &I) -> bool;
@@ -59,21 +59,18 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     /// Performs Dijkstra's shortest path algorithm on the graph.
     ///
     /// Returns the `GraphPath` between the two vertices and will end prematurely once the path has been found.
-    /// The `GraphPath` will be empty if an error occured during the algorithm.
+    /// Returns an error string if an error occured during the algorithm execution.
     /// 
     /// This algorithm runs in worst case O(V<sup>2</sup>) time.
-    fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> GraphPath<I> {
+    fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> Result<GraphPath<I>, String> {
         if !self.is_id_in_graph(start_vertex) || !self.is_id_in_graph(target_vertex) {
-            return GraphPath::new();
+            return Err(String::from_str("The start or target vertex does not exist in the graph."));
         }
         
         let mut metadata: HashMap<I, MetadataDijsktra<I>>;
         let mut vertices: Vec<I> = self.get_vertex_ids();
         
-        match create_dijkstra_metadata(&vertices, start_vertex) {
-            Ok(x) => metadata = x,
-            Err(e) => return GraphPath::new()
-        }
+        metadata = try!(create_dijkstra_metadata(&vertices, start_vertex));
         
         let mut min_id: I;
         while !vertices.is_empty() {
@@ -83,31 +80,22 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
                         break;
                     }
                 },
-                None => return GraphPath::new()
+                None => return Err(String::from_str("There was an error retrieving metadata about the target vertex."))
             }
             
-            match get_min_distance(&vertices, &metadata) {
-                Ok(x) => min_id = x,
-                Err(e) => return GraphPath::new()
-            }
+            min_id = try!(get_min_distance(&vertices, &metadata));
             
             match metadata.get_mut(&min_id) {
                 Some(ref mut x) => x.visited = true,
-                None => return GraphPath::new()
+                None => return Err(String::from_str("There was an error retrieving metadata about a vertex."))
             }
 
             remove_from_list(&mut vertices, &min_id);
             
-            match perform_edge_relaxation(self, &mut metadata, &min_id) {
-                Ok(x) => (),
-                Err(e) => return GraphPath::new() 
-            }
+            try!(perform_edge_relaxation(self, &mut metadata, &min_id));
         }
         
-        match backtrack_vertex_predecessor(&metadata, start_vertex, target_vertex) {
-            Ok(x) => x,
-            Err(e) => GraphPath::new()
-        }
+        backtrack_vertex_predecessor(&metadata, start_vertex, target_vertex)
     }
     
     /// Performs Dijkstra's shortest path algorithm on the graph.
@@ -116,38 +104,29 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     /// The `HashMap` will be empty if an error occured.
     /// 
     /// This algorithm runs in worst case O(V<sup>2</sup>) time.
-    fn dijkstras_shortest_paths(& self, start_vertex: &I) -> HashMap<I, GraphPath<I>> {
+    fn dijkstras_shortest_paths(& self, start_vertex: &I) -> Result<HashMap<I, GraphPath<I>>, String> {
         if !self.is_id_in_graph(start_vertex) {
-            return HashMap::new();
+            return Err(String::from_str("The start vertex does not exist in the graph."));
         }
         
         let mut metadata: HashMap<I, MetadataDijsktra<I>>;
         let mut vertices: Vec<I> = self.get_vertex_ids();
         let vertices_copy: Vec<I> = vertices.clone();
         
-        match create_dijkstra_metadata(&vertices, start_vertex) {
-            Ok(x) => metadata = x,
-            Err(e) => return HashMap::new()
-        }
+        metadata = try!(create_dijkstra_metadata(&vertices, start_vertex));
         
         let mut min_id: I;
         while !vertices.is_empty() {
-            match get_min_distance(&vertices, &metadata) {
-                Ok(x) => min_id = x,
-                Err(e) => return HashMap::new()
-            }
+            min_id = try!(get_min_distance(&vertices, &metadata));
             
             match metadata.get_mut(&min_id) {
                 Some(ref mut x) => x.visited = true,
-                None => return HashMap::new()
+                None => return Err(String::from_str("There was an error retrieving metadata about a vertex."))
             }
 
             remove_from_list(&mut vertices, &min_id);
             
-            match perform_edge_relaxation(self, &mut metadata, &min_id) {
-                Ok(x) => (),
-                Err(e) => return HashMap::new() 
-            }
+            try!(perform_edge_relaxation(self, &mut metadata, &min_id));
         }
         
         let mut result: HashMap<I, GraphPath<I>> = HashMap::new();
@@ -155,11 +134,11 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
             result.insert(id.clone(), 
                 match backtrack_vertex_predecessor(&metadata, start_vertex, id) {
                     Ok(x) => x,
-                    Err(e) => GraphPath::new()
-            });
+                    Err(_) => GraphPath::new()
+            }); 
         }
         
-        result
+        Ok(result)
     }
 
     /// Finds the diameter of the graph.
@@ -168,23 +147,22 @@ pub trait Graph<I: Eq + Hash + Clone, D> {
     ///
     /// This uses the dijkstras_shortest_paths function to get all shortest paths pairs and find the longest.
     /// This algorithm runs in O(V<sup>3</sup>) time.
-    fn diameter_path(& self) -> GraphPath<I>{
+    fn diameter_path(& self) -> Result<GraphPath<I>, String>{
         let vertices: Vec<I> = self.get_vertex_ids();
         let mut longest_path: GraphPath<I> = GraphPath::new();
         let mut longest_distance = int::MIN;
         
         for id in vertices.iter() {
-            let longest_paths = self.dijkstras_shortest_paths(id);
+            let longest_paths = try!(self.dijkstras_shortest_paths(id));
             for path in longest_paths.values() {
                 if path.get_distance() > longest_distance {
                     longest_path = path.clone();
                     longest_distance = path.get_distance();
                 }
             }
-            
         }
         
-        longest_path
+        Ok(longest_path)
     }
 
     /// Finds the k core of each vertex in the graph.
@@ -451,10 +429,9 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
         neighbour_ids
     }
     
-    fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> int {
+    fn get_edge_weight(& self, start_vertex: &I, end_vertex: &I) -> Result<int, String> {
         let vertex = self.vertices.get(start_vertex);
         let empty_list = Vec::new();
-        let mut result = -1;
         
         let adj_list_nodes = match vertex {
             Some(v) => & v.neighbours,
@@ -463,12 +440,11 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
         
         for node in adj_list_nodes.iter() {
             if node.vertex_id == *end_vertex {
-                result = node.weight;
-                break;
+                return Ok(node.weight);
             }
         }
         
-        result
+        return Err(String::from_str("No edge exists between the provided vertices."));
     }
     
     fn is_adjacent(& self, start_vertex: &I, end_vertex: &I) -> bool {
@@ -503,7 +479,7 @@ impl<I: Eq + Hash + Clone, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
         
         match vertex {
             Some(ref v) => Ok(v.vertex_degree()),
-            None => Err(String::from_str("An error occured while getting the vertex degree"))
+            None => Err(String::from_str("An error occured while getting the vertex degree."))
         }
     }
 }
@@ -577,7 +553,7 @@ fn create_dijkstra_metadata<I: Eq + Hash + Clone>(vertices: &Vec<I>, start_verte
         
         match metadata.get_mut(start_vertex) {
             Some(ref mut x) => x.distance = 0,
-            None => return Err(String::from_str("An error occured while initialising the metadata"))
+            None => return Err(String::from_str("An error occured while initialising the metadata."))
         }
         
         Ok(metadata)
@@ -591,7 +567,7 @@ fn get_min_distance<I: Eq + Hash + Clone>(vertices: &Vec<I>, metadata: &HashMap<
         let id_meta;
         match metadata.get(id) {
             Some(x) => id_meta = x,
-            None => return Err(String::from_str("An error occured while attempting to find a minimum distance"))
+            None => return Err(String::from_str("An error occured while attempting to find a minimum distance."))
         }
         
         if id_meta.distance <= min {
@@ -627,8 +603,9 @@ fn perform_edge_relaxation<I: Eq + Hash + Clone, D, G: Graph<I, D>>(graph: &G, m
         }
         
         if !id_meta.visited {
-            if id_meta.distance > (min_id_meta.distance + graph.get_edge_weight(min_id, id)) {
-                id_meta.distance = min_id_meta.distance + graph.get_edge_weight(min_id, id);
+            let length = min_id_meta.distance + try!(graph.get_edge_weight(min_id, id));
+            if id_meta.distance > length {
+                id_meta.distance = length;
                 id_meta.predecessor = Some(min_id.clone());
             }
         }
