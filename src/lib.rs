@@ -25,7 +25,7 @@ struct MetadataKCore<I> {
 
 /// The `Graph` trait is used to implement common operations on a graph and provide implementations of graph algorithms
 /// that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.
-pub trait Graph<I: Eq + Hash + Clone, D> {
+pub trait Graph<I: Eq + Hash + Clone, D> : Sized {
     /// The method to add a vertex to the graph.
     fn add_vertex(&mut self, vertex_id: I, data: D) -> ();
     
