@@ -36,7 +36,7 @@ fn test_add_edge_with_weight () {
     graph.add_edge_with_weight(1, 2, 10);
     
     assert!(graph.is_adjacent(&1, &2));
-    assert_eq!(graph.get_edge_weight(&1, &2), 10);
+    assert_eq!(graph.get_edge_weight(&1, &2).unwrap(), 10);
 }
 
 #[test]
@@ -68,7 +68,7 @@ fn test_graph_diameter_unweighted_graph() {
     graph.add_edge(1, 3);
     graph.add_edge(3, 4);
     
-    let diameter: GraphPath<int> = graph.diameter_path();
+    let diameter: GraphPath<int> = graph.diameter_path().unwrap();
     
     assert_eq!(diameter.get_distance(), 3);
     assert!(diameter.get_path().contains(&2));
@@ -92,7 +92,7 @@ fn test_graph_diameter_weighted_graph() {
     graph.add_edge_with_weight(3, 4, 3);
     graph.add_edge_with_weight(2, 3, 6);
     
-    let diameter: GraphPath<int> = graph.diameter_path();
+    let diameter: GraphPath<int> = graph.diameter_path().unwrap();
     
     assert_eq!(diameter.get_distance(), 13);
     assert!(diameter.get_path().contains(&1));
@@ -114,7 +114,7 @@ fn test_dijsktras_shortest_path_unweighted_graph() {
     graph.add_edge(1, 3);
     graph.add_edge(3, 4);
     
-    let shortest_path = graph.dijkstras_shortest_path(&2, &3);
+    let shortest_path = graph.dijkstras_shortest_path(&2, &3).unwrap();
     
     assert_eq!(shortest_path.get_distance(), 2);
     assert!(shortest_path.get_path().contains(&2));
@@ -137,7 +137,7 @@ fn test_dijsktras_shortest_path_weighted_graph() {
     graph.add_edge_with_weight(3, 4, 3);
     graph.add_edge_with_weight(2, 3, 6);
     
-    let shortest_path = graph.dijkstras_shortest_path(&2, &3);
+    let shortest_path = graph.dijkstras_shortest_path(&2, &3).unwrap();
     
     assert_eq!(shortest_path.get_distance(), 6);
     assert!(shortest_path.get_path().contains(&2));
@@ -158,7 +158,7 @@ fn test_dijsktras_shortest_paths_unweighted_graph() {
     graph.add_edge(1, 3);
     graph.add_edge(3, 4);
     
-    let shortest_paths = graph.dijkstras_shortest_paths(&1);
+    let shortest_paths = graph.dijkstras_shortest_paths(&1).unwrap();
     
     assert_eq!(shortest_paths.get(&1).unwrap().get_distance(), 0);
     assert!(shortest_paths.get(&1).unwrap().get_path().contains(&1));
@@ -195,7 +195,7 @@ fn test_dijsktras_shortest_paths_weighted_graph() {
     graph.add_edge_with_weight(3, 4, 3);
     graph.add_edge_with_weight(2, 3, 6);
     
-    let shortest_paths = graph.dijkstras_shortest_paths(&1);
+    let shortest_paths = graph.dijkstras_shortest_paths(&1).unwrap();
     
     assert_eq!(shortest_paths.get(&1).unwrap().get_distance(), 0);
     assert!(shortest_paths.get(&1).unwrap().get_path().contains(&1));
@@ -233,7 +233,7 @@ fn test_k_core_decomposition() {
     graph.add_edge(2, 3);
     graph.add_edge(2, 5);
     
-    let k_core_decomposition: HashMap<uint, Vec<int>> = graph.k_core_decomposition();
+    let k_core_decomposition: HashMap<u32, Vec<int>> = graph.k_core_decomposition();
     
     assert_eq!(k_core_decomposition.get(&0).unwrap().len(), 1);
     assert!(k_core_decomposition.get(&0).unwrap().contains(&4));
