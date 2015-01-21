@@ -234,7 +234,7 @@ pub trait Graph<I: Eq + Clone + Hash<Hasher>, D> : Sized {
                     
                     {
                         if buckets.contains_key(& (u_vertex_meta.degree)) {
-                            buckets.get_mut(& (u_vertex_meta.degree-1)).unwrap().insert(u.clone());
+                            buckets.get_mut(& (u_vertex_meta.degree)).unwrap().insert(u.clone());
                         } else {
                             let mut hashset = HashSet::new();
                             hashset.insert(u.clone());
