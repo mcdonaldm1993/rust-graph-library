@@ -24,7 +24,9 @@ struct MetadataKCore<I> {
 
 /// The `Graph` trait is used to implement common operations on a graph and provide implementations of graph algorithms
 /// that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.
-pub trait Graph<I: Eq + Clone + Hash<Hasher>, D> : Sized {
+pub trait Graph<I, D>
+    where I: Eq + Clone + Hash<Hasher>
+{
     /// The method to add a vertex to the graph.
     fn add_vertex(&mut self, vertex_id: I, data: D) -> ();
     
@@ -61,7 +63,7 @@ pub trait Graph<I: Eq + Clone + Hash<Hasher>, D> : Sized {
     /// Returns an error string if an error occured during the algorithm execution.
     /// 
     /// This algorithm runs in worst case O(V<sup>2</sup>) time.
-    fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> Result<GraphPath<I>, String> {
+    fn dijkstras_shortest_path(& self, start_vertex: &I, target_vertex: &I) -> Result<GraphPath<I>, String> where Self: Sized {
         if !self.is_id_in_graph(start_vertex) || !self.is_id_in_graph(target_vertex) {
             return Err(String::from_str("The start or target vertex does not exist in the graph."));
         }
@@ -103,7 +105,7 @@ pub trait Graph<I: Eq + Clone + Hash<Hasher>, D> : Sized {
     /// The `HashMap` will be empty if an error occured.
     /// 
     /// This algorithm runs in worst case O(V<sup>2</sup>) time.
-    fn dijkstras_shortest_paths(& self, start_vertex: &I) -> Result<HashMap<I, GraphPath<I>>, String> {
+    fn dijkstras_shortest_paths(& self, start_vertex: &I) -> Result<HashMap<I, GraphPath<I>>, String> where Self: Sized {
         if !self.is_id_in_graph(start_vertex) {
             return Err(String::from_str("The start vertex does not exist in the graph."));
         }
@@ -146,7 +148,7 @@ pub trait Graph<I: Eq + Clone + Hash<Hasher>, D> : Sized {
     ///
     /// This uses the dijkstras_shortest_paths function to get all shortest paths pairs and find the longest.
     /// This algorithm runs in O(V<sup>3</sup>) time.
-    fn diameter_path(& self) -> Result<GraphPath<I>, String>{
+    fn diameter_path(& self) -> Result<GraphPath<I>, String> where Self: Sized {
         let vertices: Vec<I> = self.get_vertex_ids();
         let mut longest_path: GraphPath<I> = GraphPath::new();
         let mut longest_distance = i32::MIN;
@@ -169,7 +171,7 @@ pub trait Graph<I: Eq + Clone + Hash<Hasher>, D> : Sized {
     /// Returns a `HashMap` with the core as a key and a vector of all vertex IDs in that core as a value.
     ///
     /// This algorithm runs in O(E) time.
-    fn k_core_decomposition(& self) -> HashMap<u32, Vec<I>> {
+    fn k_core_decomposition(& self) -> HashMap<u32, Vec<I>> where Self: Sized {
         let mut buckets: HashMap<u32, HashSet<I>> = HashMap::new();
         let mut metadata: HashMap<I, MetadataKCore<I>> = HashMap::new();
         let mut result: HashMap<u32, Vec<I>> = HashMap::new();
@@ -320,7 +322,9 @@ pub struct UndirectedAdjListGraph<I, D> {
     vertices: HashMap<I, Vertex<I, D>>,
 }
 
-impl<I: Eq + Clone + Hash<Hasher>, D> UndirectedAdjListGraph<I, D> {
+impl<I, D> UndirectedAdjListGraph<I, D>
+    where I: Eq + Clone + Hash<Hasher> 
+{
     /// Creates a new emtpy `UndirectedAdjListGraph<I, D>`.
     pub fn new() -> UndirectedAdjListGraph<I, D> {
         UndirectedAdjListGraph {
@@ -336,7 +340,9 @@ impl<I: Eq + Clone + Hash<Hasher>, D> UndirectedAdjListGraph<I, D> {
     }
 }
 
-impl<I: Eq + Clone + Hash<Hasher>, D> Graph<I, D> for UndirectedAdjListGraph<I, D> {
+impl<I, D> Graph<I, D> for UndirectedAdjListGraph<I, D> 
+    where I: Eq + Clone + Hash<Hasher>
+{
     fn add_vertex(&mut self, vertex_id: I, data: D) -> () {
         let vertex = Vertex::new(vertex_id.clone(), data);
         self.vertices.insert(vertex_id, vertex);
@@ -534,7 +540,9 @@ impl<I> AdjListNode<I> {
 // Private functions used in the graph trait provided functions
 ////////////////////////////////////////////////////////////////////////////////
 
-fn create_dijkstra_metadata<I: Eq + Clone + Hash<Hasher>>(vertices: &Vec<I>, start_vertex: &I) -> Result<HashMap<I, MetadataDijsktra<I>>, String> {
+fn create_dijkstra_metadata<I>(vertices: &Vec<I>, start_vertex: &I) -> Result<HashMap<I, MetadataDijsktra<I>>, String> 
+    where I: Eq + Clone + Hash<Hasher>
+{
         let mut metadata: HashMap<I, MetadataDijsktra<I>> = HashMap::new();
                 
         for id in vertices.iter() {
@@ -554,7 +562,9 @@ fn create_dijkstra_metadata<I: Eq + Clone + Hash<Hasher>>(vertices: &Vec<I>, sta
         Ok(metadata)
 }
 
-fn get_min_distance<I: Eq + Clone + Hash<Hasher>>(vertices: &Vec<I>, metadata: &HashMap<I, MetadataDijsktra<I>>) -> Result<I, String> {
+fn get_min_distance<I>(vertices: &Vec<I>, metadata: &HashMap<I, MetadataDijsktra<I>>) -> Result<I, String> 
+ where I: Eq + Clone + Hash<Hasher>
+{
     let mut min = i32::MAX;
     let mut min_id = vertices[0].clone();
     
@@ -574,7 +584,9 @@ fn get_min_distance<I: Eq + Clone + Hash<Hasher>>(vertices: &Vec<I>, metadata: &
     Ok(min_id)
 }
 
-fn remove_from_list<I: Eq>(vertices: &mut Vec<I>, id: &I) -> () {
+fn remove_from_list<I>(vertices: &mut Vec<I>, id: &I) -> () 
+    where I: Eq
+{
     for i in 0..vertices.len() {
         if vertices[i] == *id {
             vertices.remove(i);
@@ -583,7 +595,10 @@ fn remove_from_list<I: Eq>(vertices: &mut Vec<I>, id: &I) -> () {
     }
 }
 
-fn perform_edge_relaxation<I: Eq + Clone + Hash<Hasher>, D, G: Graph<I, D>>(graph: &G, metadata: &mut HashMap<I, MetadataDijsktra<I>>, min_id: &I) -> Result<(), String> {
+fn perform_edge_relaxation<I, D, G>(graph: &G, metadata: &mut HashMap<I, MetadataDijsktra<I>>, min_id: &I) -> Result<(), String> 
+    where I: Eq + Clone + Hash<Hasher>,
+          G: Graph<I, D>
+{
     for id in graph.get_vertex_neighbours(min_id).iter() {
         let min_id_meta;
         match metadata.get(min_id).cloned() {
@@ -609,7 +624,9 @@ fn perform_edge_relaxation<I: Eq + Clone + Hash<Hasher>, D, G: Graph<I, D>>(grap
     Ok(())
 }
 
-fn backtrack_vertex_predecessor<I: Eq + Clone + Hash<Hasher>>(metadata: &HashMap<I, MetadataDijsktra<I>>, start_vertex: &I, target_vertex: &I) -> Result<GraphPath<I>, String> {
+fn backtrack_vertex_predecessor<I>(metadata: &HashMap<I, MetadataDijsktra<I>>, start_vertex: &I, target_vertex: &I) -> Result<GraphPath<I>, String>
+    where I: Eq + Clone + Hash<Hasher>
+{
     let mut result: GraphPath<I> = GraphPath::new();
     
     match metadata.get(target_vertex) {
@@ -639,7 +656,9 @@ fn backtrack_vertex_predecessor<I: Eq + Clone + Hash<Hasher>>(metadata: &HashMap
     Ok(result)
 }
 
-fn get_next_vertex<I: Eq + Clone + Hash<Hasher>>(buckets: &mut HashMap<u32, HashSet<I>>, current_core: &mut u32) -> Result<I, ()> {
+fn get_next_vertex<I>(buckets: &mut HashMap<u32, HashSet<I>>, current_core: &mut u32) -> Result<I, ()> 
+    where I: Eq + Clone + Hash<Hasher>
+{
     let current_core_bucket;
     
     match buckets.get_mut(current_core) {
