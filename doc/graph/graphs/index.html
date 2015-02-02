@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `graph` crate.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, graph">
+    <meta name="description" content="API documentation for the Rust `graphs` mod in crate `graph`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, graphs">
 
-    <title>graph - Rust</title>
+    <title>graph::graphs - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../main.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
     
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'></p>
+        <p class='location'><a href='../index.html'>graph</a></p><div class='block mod'><h2>Modules</h2><a class='mod current' href='../graphs/index.html'>graphs</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='../struct.GraphPath.html'>GraphPath</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='../trait.Edge.html'>Edge</a><a class='trait ' href='../trait.Graph.html'>Graph</a></div>
     </section>
 
     <nav class="sub">
@@ -41,39 +41,31 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>graph</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>graph</a>::<wbr><a class='mod' href=''>graphs</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]
             </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' href='../src/graph/lib.rs.html#1-477'>[src]</a></span></h1>
-<h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+        </span><a id='src-13' href='../../src/graph/graphs/mod.rs.html#1-9'>[src]</a></span></h1>
+<div class='docblock'><p>This module contains default implementations for graphs and edges</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='graphs/index.html'
-                               title='graph::graphs'>graphs</a></td>
-                        <td class='docblock short'><p>This module contains default implementations for graphs and edges</p>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.UndirectedAdjacencyListGraph.html'
+                               title='graph::graphs::UndirectedAdjacencyListGraph'>UndirectedAdjacencyListGraph</a></td>
+                        <td class='docblock short'><p>An undirected graph represented by an adjacency list.</p>
 </td>
-                    </tr>
-                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.GraphPath.html'
-                               title='graph::GraphPath'>GraphPath</a></td>
-                        <td class='docblock short'><p>A struct used to represent a path in a graph.</p>
-</td>
-                    </tr>
-                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
-<table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Edge.html'
-                               title='graph::Edge'>Edge</a></td>
-                        <td class='docblock short'></td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Graph.html'
-                               title='graph::Graph'>Graph</a></td>
-                        <td class='docblock short'><p>The <code>Graph</code> trait is used to implement common operations on a graph and provide implementations of graph algorithms
-that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.</p>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.UnweightedEdge.html'
+                               title='graph::graphs::UnweightedEdge'>UnweightedEdge</a></td>
+                        <td class='docblock short'><p>A default implementation of a weighted edge that can be used in graph implementations.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.WeightedEdge.html'
+                               title='graph::graphs::WeightedEdge'>WeightedEdge</a></td>
+                        <td class='docblock short'><p>A default implementation of a weighted edge that can be used in graph implementations.</p>
 </td>
                     </tr>
                 </table></section>
@@ -115,13 +107,13 @@ that use these operations so that concrete types of graphs can be implemented an
     
 
     <script>
-        window.rootPath = "../";
+        window.rootPath = "../../";
         window.currentCrate = "graph";
         window.playgroundUrl = "";
     </script>
-    <script src="../jquery.js"></script>
-    <script src="../main.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script async src="../../search-index.js"></script>
 </body>
 </html>
