@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Graph` trait in crate `graph`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Graph">
+
+    <title>graph::Graph - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>graph</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='graphs/index.html'>graphs</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.GraphPath.html'>GraphPath</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Edge.html'>Edge</a><a class='trait current' href='trait.Graph.html'>Graph</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>graph</a>::<wbr><a class='trait' href=''>Graph</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-1237' href='../src/graph/lib.rs.html#36-325'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Graph&lt;N, E&gt; <span class='where'>where N: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.Hasher.html' title='std::collections::hash::map::Hasher'>Hasher</a>&gt;, E: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.Hasher.html' title='std::collections::hash::map::Hasher'>Hasher</a>&gt; + <a class='trait' href='../graph/trait.Edge.html' title='graph::Edge'>Edge</a>&lt;N&gt;</span> {
+    fn <a href='#tymethod.new' class='fnname'>new</a>() -&gt; Self;
+    fn <a href='#tymethod.add_node' class='fnname'>add_node</a>(&amp;mut self, node_id: N);
+    fn <a href='#tymethod.add_edge' class='fnname'>add_edge</a>(&amp;mut self, source: N, destination: N, weight: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>);
+    fn <a href='#tymethod.get_nodes' class='fnname'>get_nodes</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;N&gt;;
+    fn <a href='#tymethod.get_node_neighbours' class='fnname'>get_node_neighbours</a>(&amp;self, node_id: &amp;N) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;N&gt;;
+    fn <a href='#tymethod.get_edge' class='fnname'>get_edge</a>(&amp;self, source: &amp;N, destination: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;E, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;;
+    fn <a href='#tymethod.get_edges' class='fnname'>get_edges</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;E&gt;;
+    fn <a href='#tymethod.is_adjacent' class='fnname'>is_adjacent</a>(&amp;self, source: &amp;N, destination: &amp;N) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.is_node_in_graph' class='fnname'>is_node_in_graph</a>(&amp;self, node: &amp;N) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+    fn <a href='#tymethod.degree' class='fnname'>degree</a>(&amp;self, node: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;;
+
+    fn <a href='#method.dijkstras_shortest_path' class='fnname'>dijkstras_shortest_path</a>(&amp;self, source: &amp;N, destination: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../graph/struct.GraphPath.html' title='graph::GraphPath'>GraphPath</a>&lt;N&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
+    fn <a href='#method.dijkstras_shortest_paths' class='fnname'>dijkstras_shortest_paths</a>(&amp;self, source: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html' title='std::collections::hash::map::HashMap'>HashMap</a>&lt;N, <a class='struct' href='../graph/struct.GraphPath.html' title='graph::GraphPath'>GraphPath</a>&lt;N&gt;&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
+    fn <a href='#method.diameter_path' class='fnname'>diameter_path</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../graph/struct.GraphPath.html' title='graph::GraphPath'>GraphPath</a>&lt;N&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
+    fn <a href='#method.k_core_decomposition' class='fnname'>k_core_decomposition</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html' title='std::collections::hash::map::HashMap'>HashMap</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;N&gt;&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
+    fn <a href='#method.kruskal_min_spanning_tree' class='fnname'>kruskal_min_spanning_tree</a>(&amp;self) -&gt; Self <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
+}</pre><div class='docblock'><p>The <code>Graph</code> trait is used to implement common operations on a graph and provide implementations of graph algorithms
+that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.new' class='fnname'>new</a>() -&gt; Self</code></h3><div class='docblock'><p>Creates a new instance of the graph.</p>
+</div><h3 id='tymethod.add_node' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.add_node' class='fnname'>add_node</a>(&amp;mut self, node_id: N)</code></h3><div class='docblock'><p>The method to add a node to the graph.</p>
+</div><h3 id='tymethod.add_edge' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.add_edge' class='fnname'>add_edge</a>(&amp;mut self, source: N, destination: N, weight: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h3><div class='docblock'><p>The method to add an edge to the graph between two nodes, specifying a weight.</p>
+</div><h3 id='tymethod.get_nodes' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.get_nodes' class='fnname'>get_nodes</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;N&gt;</code></h3><div class='docblock'><p>The method to return a vector of IDs of all nodes in the graph.</p>
+</div><h3 id='tymethod.get_node_neighbours' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.get_node_neighbours' class='fnname'>get_node_neighbours</a>(&amp;self, node_id: &amp;N) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;N&gt;</code></h3><div class='docblock'><p>The method to get the list of nodes that are adjacent to a node.</p>
+</div><h3 id='tymethod.get_edge' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.get_edge' class='fnname'>get_edge</a>(&amp;self, source: &amp;N, destination: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;E, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>The method to get edge between two nodes.</p>
+</div><h3 id='tymethod.get_edges' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.get_edges' class='fnname'>get_edges</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;E&gt;</code></h3><div class='docblock'><p>The method to get the edge set in the graph.</p>
+</div><h3 id='tymethod.is_adjacent' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.is_adjacent' class='fnname'>is_adjacent</a>(&amp;self, source: &amp;N, destination: &amp;N) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>The method to check if two nodes are adjacent.</p>
+</div><h3 id='tymethod.is_node_in_graph' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.is_node_in_graph' class='fnname'>is_node_in_graph</a>(&amp;self, node: &amp;N) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>The method to check if a node is in the graph.</p>
+</div><h3 id='tymethod.degree' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.degree' class='fnname'>degree</a>(&amp;self, node: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>The method to return the degree of a node.</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.dijkstras_shortest_path' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.dijkstras_shortest_path' class='fnname'>dijkstras_shortest_path</a>(&amp;self, source: &amp;N, destination: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../graph/struct.GraphPath.html' title='graph::GraphPath'>GraphPath</a>&lt;N&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h3><div class='docblock'><p>Performs Dijkstra&#39;s shortest path algorithm on the graph.</p>
+
+<p>Returns the <code>GraphPath</code> between the two vertices and will end prematurely once the path has been found.
+Returns an error string if an error occured during the algorithm execution.</p>
+
+<p>This algorithm runs in worst case O(V<sup>2</sup>) time.</p>
+</div><h3 id='method.dijkstras_shortest_paths' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.dijkstras_shortest_paths' class='fnname'>dijkstras_shortest_paths</a>(&amp;self, source: &amp;N) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html' title='std::collections::hash::map::HashMap'>HashMap</a>&lt;N, <a class='struct' href='../graph/struct.GraphPath.html' title='graph::GraphPath'>GraphPath</a>&lt;N&gt;&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h3><div class='docblock'><p>Performs Dijkstra&#39;s shortest path algorithm on the graph.</p>
+
+<p>Returns a <code>HashMap</code> of target vertices to the <code>GraphPath</code> between the vertex and the target vertex.
+The <code>HashMap</code> will be empty if an error occured.</p>
+
+<p>This algorithm runs in worst case O(V<sup>2</sup>) time.</p>
+</div><h3 id='method.diameter_path' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.diameter_path' class='fnname'>diameter_path</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../graph/struct.GraphPath.html' title='graph::GraphPath'>GraphPath</a>&lt;N&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h3><div class='docblock'><p>Finds the diameter of the graph.</p>
+
+<p>Returns a <code>GraphPath</code> of the path that determined the diameter of the graph.</p>
+
+<p>This uses the dijkstras_shortest_paths function to get all shortest paths pairs and find the longest.
+This algorithm runs in O(V<sup>3</sup>) time.</p>
+</div><h3 id='method.k_core_decomposition' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.k_core_decomposition' class='fnname'>k_core_decomposition</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html' title='std::collections::hash::map::HashMap'>HashMap</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;N&gt;&gt; <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h3><div class='docblock'><p>Finds the k core of each vertex in the graph.</p>
+
+<p>Returns a <code>HashMap</code> with the core as a key and a vector of all vertex IDs in that core as a value.</p>
+
+<p>This algorithm runs in O(E) time.</p>
+</div><h3 id='method.kruskal_min_spanning_tree' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.kruskal_min_spanning_tree' class='fnname'>kruskal_min_spanning_tree</a>(&amp;self) -&gt; Self <span class='where'>where Self: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span></code></h3><div class='docblock'><p>Creates a minimum spanning tree of the graph using Kruskal&#39;s algorithm.</p>
+
+<p>Returns the minimum spanning tree in the same graph implementation that is used.</p>
+
+<p>This algorithm runs in O(Eα(V)) time, where α is the extremely slowly growing inverse of the single-valued Ackermann function.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;N, E&gt; <a class='trait' href='../graph/trait.Graph.html' title='graph::Graph'>Graph</a>&lt;N, E&gt; for <a class='struct' href='../graph/graphs/struct.UndirectedAdjacencyListGraph.html' title='graph::graphs::UndirectedAdjacencyListGraph'>UndirectedAdjacencyListGraph</a>&lt;N, E&gt; <span class='where'>where N: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.Hasher.html' title='std::collections::hash::map::Hasher'>Hasher</a>&gt;, E: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.Hasher.html' title='std::collections::hash::map::Hasher'>Hasher</a>&gt; + <a class='trait' href='../graph/trait.Edge.html' title='graph::Edge'>Edge</a>&lt;N&gt;</span></code></li>
+</ul><script type="text/javascript" async
+                              src="../implementors/graph/trait.Graph.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "graph";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
