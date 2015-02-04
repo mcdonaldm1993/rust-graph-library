@@ -262,6 +262,11 @@ pub trait Graph<N, E>
         result
     }
 
+    /// Creates a minimum spanning tree of the graph using Kruskal's algorithm.
+    ///
+    /// Returns the minimum spanning tree in the same graph implementation that is used.
+    ///
+    /// This algorithm runs in O(Eα(V)) time, where α is the extremely slowly growing inverse of the single-valued Ackermann function.
     fn kruskal_min_spanning_tree(& self) -> Self where Self: Sized {
         let mut node_set: DisjointSet<N> = DisjointSet::new();
         let mut mst_edges = Vec::new();
