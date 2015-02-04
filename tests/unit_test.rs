@@ -249,3 +249,39 @@ fn test_k_core_decomposition() {
     assert!(k_core_decomposition.get(&2).unwrap().contains(&2));
     assert!(k_core_decomposition.get(&2).unwrap().contains(&3));
 }
+
+#[test]
+fn test_kruskal_min_spanning_tree() {
+    let mut graph: UndirectedAdjacencyListGraph<i32, WeightedEdge<i32>> = Graph::new();
+    
+    graph.add_node(1);
+    graph.add_node(2);
+    graph.add_node(3);
+    graph.add_node(4);
+    graph.add_node(5);
+    
+    graph.add_edge(1, 2, 3);
+    graph.add_edge(1, 5, 1);
+    graph.add_edge(2, 3, 5);
+    graph.add_edge(2, 5, 4);
+    graph.add_edge(3, 4, 2);
+    graph.add_edge(3, 5, 6);
+    graph.add_edge(4, 5, 7);
+    
+    let mut mst: UndirectedAdjacencyListGraph<i32, WeightedEdge<i32>> = graph.kruskal_min_spanning_tree();
+    
+    assert!(mst.is_node_in_graph(&1));
+    assert!(mst.is_node_in_graph(&2));
+    assert!(mst.is_node_in_graph(&3));
+    assert!(mst.is_node_in_graph(&4));
+    assert!(mst.is_node_in_graph(&5));
+    
+    assert!(mst.get_edge(&1, &2).is_ok());
+    assert!(mst.get_edge(&1, &5).is_ok());
+    assert!(mst.get_edge(&2, &3).is_ok());
+    assert!(mst.get_edge(&3, &4).is_ok());
+    
+    assert!(mst.get_edge(&2, &5).is_err());
+    assert!(mst.get_edge(&3, &5).is_err());
+    assert!(mst.get_edge(&4, &5).is_err());
+}

@@ -35,7 +35,7 @@ struct MetadataKCore<N> {
 /// that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.
 pub trait Graph<N, E>
     where N: Eq + Clone + Hash<Hasher>,
-          E: Edge<N>
+          E: Eq + Clone + Hash<Hasher> + Edge<N>
 {
     /// Creates a new instance of the graph.
     fn new() -> Self;
@@ -182,17 +182,17 @@ pub trait Graph<N, E>
     ///
     /// This algorithm runs in O(E) time.
     fn k_core_decomposition(& self) -> HashMap<u32, Vec<N>> where Self: Sized {
-        let mut buckets: HashMap<u32, HashSet<N>> = HashMap::new();
+        let mut buckets: HashMap<i32, HashSet<N>> = HashMap::new();
         let mut metadata: HashMap<N, MetadataKCore<N>> = HashMap::new();
         let mut result: HashMap<u32, Vec<N>> = HashMap::new();
-        let mut max_degree: u32 = 0;
-        let mut current_core: u32 = 0;
+        let mut max_degree: i32 = 0;
+        let mut current_core: i32 = 0;
         
         for v in self.get_nodes().iter() {
             let degree = match self.degree(v) {
                 Ok(d) => d,
                 Err(_) => 0
-            };
+            } as i32;
             
             if !buckets.contains_key(&degree) {
                 buckets.insert(degree, HashSet::new());
@@ -202,7 +202,7 @@ pub trait Graph<N, E>
             
             metadata.insert(v.clone(), MetadataKCore {
                 id: v.clone(),
-                degree: degree,
+                degree: degree as u32,
                 core: 0
             });
             
@@ -236,7 +236,7 @@ pub trait Graph<N, E>
                 
                 if u_vertex_meta.degree > v_degree {
                     {
-                        match buckets.get_mut(&u_vertex_meta.degree) {
+                        match buckets.get_mut(&(u_vertex_meta.degree as i32)) {
                             Some(bucket) => { bucket.remove(u); },
                             None => { continue; }
                         }
@@ -245,12 +245,12 @@ pub trait Graph<N, E>
                     u_vertex_meta.degree = u_vertex_meta.degree-1;
                     
                     {
-                        if buckets.contains_key(& (u_vertex_meta.degree)) {
-                            buckets.get_mut(& (u_vertex_meta.degree)).unwrap().insert(u.clone());
+                        if buckets.contains_key(&(u_vertex_meta.degree as i32)) {
+                            buckets.get_mut(&(u_vertex_meta.degree as i32)).unwrap().insert(u.clone());
                         } else {
                             let mut hashset = HashSet::new();
                             hashset.insert(u.clone());
-                            buckets.insert(u_vertex_meta.degree, hashset);
+                            buckets.insert(u_vertex_meta.degree as i32, hashset);
                         }
                     }
                     
@@ -262,13 +262,61 @@ pub trait Graph<N, E>
         result
     }
 
-    // fn kruskal_min_spanning_tree(& self) -> Self {
-    //     // add code here
-    //     let vertex_set: DisjointSet<I> = DisjointSet::new();
-    //     let mst_edges = Vec::new();
+    fn kruskal_min_spanning_tree(& self) -> Self where Self: Sized {
+        let mut node_set: DisjointSet<N> = DisjointSet::new();
+        let mut mst_edges = Vec::new();
+        let mut buckets: HashMap<i32, HashSet<E>> = HashMap::new();
         
+        let mut current_bucket: i32 = 0;
+        let mut max_bucket: i32 = i32::MIN;
+        let n = self.get_nodes().len()-1;
         
-    // }
+        for e in self.get_edges().iter() {
+            let weight = e.get_weight();
+            
+            if !buckets.contains_key(&weight) {
+                buckets.insert(weight, HashSet::new());
+            }
+            
+            buckets.get_mut(&weight).unwrap().insert(e.clone());
+            
+            if weight > max_bucket { max_bucket = weight };            
+        }
+        
+        for n in self.get_nodes().iter() {
+            node_set.make_set(n.clone());
+        }
+        
+        loop {
+            if mst_edges.len() == n {
+                break;
+            }
+            
+            let mut e: E;
+            
+            match get_next_vertex(&mut buckets, &mut current_bucket) {
+                Ok(edge) => e = edge,
+                Err(_) => if current_bucket == max_bucket { break; } else { continue; }
+            }
+            
+            if node_set.find(e.get_target()) != node_set.find(e.get_source()) {
+                mst_edges.push(e.clone());
+                node_set.union(e.get_target(), e.get_source());
+            }
+        }
+        
+        let mut mst: Self = Graph::new();
+        
+        for n in self.get_nodes().iter() {
+            mst.add_node(n.clone());
+        }
+        
+        for e in mst_edges.iter() {
+            mst.add_edge(e.get_source(), e.get_target(), e.get_weight());
+        }
+        
+        return mst;
+    }
 }
 
 
@@ -388,7 +436,7 @@ fn remove_from_list<N>(vertices: &mut Vec<N>, id: &N) -> ()
 
 fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, MetadataDijsktra<N>>, min_id: &N) -> Result<(), String> 
     where N: Eq + Clone + Hash<Hasher>,
-          E: Edge<N>,
+          E: Eq + Clone + Hash<Hasher> + Edge<N>,
           G: Graph<N, E>
 {
     for id in graph.get_node_neighbours(min_id).iter() {
@@ -448,7 +496,7 @@ fn backtrack_vertex_predecessor<N>(metadata: &HashMap<N, MetadataDijsktra<N>>, s
     Ok(result)
 }
 
-fn get_next_vertex<N>(buckets: &mut HashMap<u32, HashSet<N>>, current_core: &mut u32) -> Result<N, ()> 
+fn get_next_vertex<N>(buckets: &mut HashMap<i32, HashSet<N>>, current_core: &mut i32) -> Result<N, ()> 
     where N: Eq + Clone + Hash<Hasher>
 {
     let current_core_bucket;

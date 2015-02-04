@@ -1,5 +1,3 @@
-extern crate core;
-
 use std::rc::Rc;
 use std::rc::Weak;
 use std::collections::HashMap;
@@ -17,8 +15,8 @@ pub struct UndirectedAdjacencyListGraph<N, E> {
 }
 
 impl<N, E> Graph<N, E> for UndirectedAdjacencyListGraph<N, E> 
-    where N: Hash<Hasher> +Eq + Clone + core::fmt::String,
-          E: Edge<N> + Clone
+    where N: Eq + Clone + Hash<Hasher>,
+          E: Eq + Clone + Hash<Hasher> + Edge<N>
 {
     fn new() -> UndirectedAdjacencyListGraph<N, E> {
         UndirectedAdjacencyListGraph {

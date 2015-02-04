@@ -1,7 +1,7 @@
 use Edge;
 
 /// A default implementation of a weighted edge that can be used in graph implementations.
-#[derive(Clone)]
+#[derive(Clone, Hash)]
 pub struct WeightedEdge<N> {
     source: N,
     target: N,
@@ -37,3 +37,13 @@ impl<N> Edge<N> for WeightedEdge<N>
         self.directed
     }
 }
+
+impl<N> PartialEq for WeightedEdge<N>
+    where N: Eq
+{
+    fn eq(&self, other: &WeightedEdge<N>) -> bool {
+        self.source == other.source && self.target == other.target && self.weight == other.weight && self.directed == other.directed
+    }
+}
+
+impl<N> Eq for WeightedEdge<N> where N: Eq { }
