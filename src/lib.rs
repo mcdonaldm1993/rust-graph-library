@@ -1,3 +1,5 @@
+#![feature(core)]
+
 extern crate disjoint_set;
 
 use disjoint_set::DisjointSet;
@@ -75,7 +77,7 @@ pub trait Graph<N, E>
     /// This algorithm runs in worst case O(V<sup>2</sup>) time.
     fn dijkstras_shortest_path(& self, source: &N, destination: &N) -> Result<GraphPath<N>, String> where Self: Sized {
         if !self.is_node_in_graph(source) || !self.is_node_in_graph(destination) {
-            return Err(String::from_str("The start or target node does not exist in the graph."));
+            return Err("The start or target node does not exist in the graph.".to_string());
         }
         
         let mut metadata: HashMap<N, MetadataDijsktra<N>>;
@@ -91,14 +93,14 @@ pub trait Graph<N, E>
                         break;
                     }
                 },
-                None => return Err(String::from_str("There was an error retrieving metadata about the target node."))
+                None => return Err("There was an error retrieving metadata about the target node.".to_string())
             }
             
             min_id = try!(get_min_distance(&nodes, &metadata));
             
             match metadata.get_mut(&min_id) {
                 Some(ref mut x) => x.visited = true,
-                None => return Err(String::from_str("There was an error retrieving metadata about a node."))
+                None => return Err("There was an error retrieving metadata about a node.".to_string())
             }
 
             remove_from_list(&mut nodes, &min_id);
@@ -117,7 +119,7 @@ pub trait Graph<N, E>
     /// This algorithm runs in worst case O(V<sup>2</sup>) time.
     fn dijkstras_shortest_paths(& self, source: &N) -> Result<HashMap<N, GraphPath<N>>, String> where Self: Sized {
         if !self.is_node_in_graph(source) {
-            return Err(String::from_str("The start node does not exist in the graph."));
+            return Err("The start node does not exist in the graph.".to_string());
         }
         
         let mut metadata: HashMap<N, MetadataDijsktra<N>>;
@@ -132,7 +134,7 @@ pub trait Graph<N, E>
             
             match metadata.get_mut(&min_id) {
                 Some(ref mut x) => x.visited = true,
-                None => return Err(String::from_str("There was an error retrieving metadata about a node."))
+                None => return Err("There was an error retrieving metadata about a node.".to_string())
             }
 
             remove_from_list(&mut nodes, &min_id);
@@ -343,7 +345,7 @@ pub trait Edge<N> {
 /// A struct used to represent a path in a graph.
 ///
 /// The struct contains the path of vertex IDs and the distance of the path.
-#[derive(Show, Clone)]
+#[derive(Debug, Clone)]
 pub struct GraphPath<N> {
     distance: i32,
     path: Vec<N>
@@ -400,7 +402,7 @@ fn create_dijkstra_metadata<N>(vertices: &Vec<N>, start_vertex: &N) -> Result<Ha
         
         match metadata.get_mut(start_vertex) {
             Some(ref mut x) => x.distance = 0,
-            None => return Err(String::from_str("An error occured while initialising the metadata."))
+            None => return Err("An error occured while initialising the metadata.".to_string())
         }
         
         Ok(metadata)
@@ -416,7 +418,7 @@ fn get_min_distance<N>(vertices: &Vec<N>, metadata: &HashMap<N, MetadataDijsktra
         let id_meta;
         match metadata.get(id) {
             Some(x) => id_meta = x,
-            None => return Err(String::from_str("An error occured while attempting to find a minimum distance."))
+            None => return Err("An error occured while attempting to find a minimum distance.".to_string())
         }
         
         if id_meta.distance <= min {
@@ -448,13 +450,13 @@ fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, Metadat
         let min_id_meta;
         match metadata.get(min_id).cloned() {
             Some(x) => min_id_meta = x,
-            None => return Err(String::from_str("An error occured while performing edge relaxation"))
+            None => return Err("An error occured while performing edge relaxation".to_string())
         }
         
         let mut id_meta;
         match metadata.get_mut(id) {
             Some(x) => id_meta = x,
-            None => return Err(String::from_str("An error occured while performing edge relaxation"))
+            None => return Err("An error occured while performing edge relaxation".to_string())
         }
         
         if !id_meta.visited {
@@ -476,7 +478,7 @@ fn backtrack_vertex_predecessor<N>(metadata: &HashMap<N, MetadataDijsktra<N>>, s
     
     match metadata.get(target_vertex) {
         Some(ref x) => result.set_distance(x.distance),
-        None => return Err(String::from_str("An error occured while backtracking from a vertex"))
+        None => return Err("An error occured while backtracking from a vertex".to_string())
     }
     
     let mut path: Vec<N> = Vec::new();
@@ -488,9 +490,9 @@ fn backtrack_vertex_predecessor<N>(metadata: &HashMap<N, MetadataDijsktra<N>>, s
             Some(ref x) =>  
                 match x.predecessor {
                     Some(ref y) => last = y,
-                    None => return Err(String::from_str("An error occured while backtracking from a vertex"))
+                    None => return Err("An error occured while backtracking from a vertex".to_string())
                 },
-            None => return Err(String::from_str("An error occured while backtracking from a vertex"))
+            None => return Err("An error occured while backtracking from a vertex".to_string())
         }
     }
     

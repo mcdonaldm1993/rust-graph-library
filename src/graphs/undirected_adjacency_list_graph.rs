@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::rc::Weak;
 use std::collections::HashMap;
 use std::collections::hash_map::Hasher;
 use std::hash::Hash;
@@ -85,10 +84,10 @@ impl<N, E> Graph<N, E> for UndirectedAdjacencyListGraph<N, E>
                 
                 match edge {
                     Some(e) => { return Ok( (*e).clone()); },
-                    None => { return Err(String::from_str("No edge exists between the provided vertices.")); }
+                    None => { return Err("No edge exists between the provided vertices.".to_string()); }
                 }
             },
-            None => { return Err(String::from_str("Node does not exists in graph.")); }
+            None => { return Err("Node does not exists in graph.".to_string()); }
         }
     }
     
@@ -131,7 +130,7 @@ impl<N, E> Graph<N, E> for UndirectedAdjacencyListGraph<N, E>
         
         match vertex {
             Some(v) => Ok(v.len() as u32),
-            None => Err(String::from_str("An error occured while getting the vertex degree."))
+            None => Err("An error occured while getting the vertex degree.".to_string())
         }
     }
 }
