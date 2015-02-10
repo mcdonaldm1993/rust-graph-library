@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='index.html'>graph</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='graphs/index.html'>graphs</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.GraphPath.html'>GraphPath</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Edge.html'>Edge</a><a class='trait current' href='trait.Graph.html'>Graph</a></div>
+        <p class='location'><a href='index.html'>graph</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='graphs/index.html' title='This module contains default implementations for graphs and edges'>graphs</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.GraphPath.html' title='A struct used to represent a path in a graph.'>GraphPath</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Edge.html' title=''>Edge</a><a class='trait current' href='trait.Graph.html' title='The `Graph` trait is used to implement common operations on a graph and provide implementations of graph algorithms that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.'>Graph</a></div>
     </section>
 
     <nav class="sub">
@@ -44,7 +44,7 @@
 <h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>graph</a>::<wbr><a class='trait' href=''>Graph</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]
             </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-1237' href='../src/graph/lib.rs.html#36-325'>[src]</a></span></h1>
+        </span><a id='src-1328' href='../src/graph/lib.rs.html#38-327'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Graph&lt;N, E&gt; <span class='where'>where N: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.Hasher.html' title='std::collections::hash::map::Hasher'>Hasher</a>&gt;, E: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/std/collections/hash/map/struct.Hasher.html' title='std::collections::hash::map::Hasher'>Hasher</a>&gt; + <a class='trait' href='../graph/trait.Edge.html' title='graph::Edge'>Edge</a>&lt;N&gt;</span> {
     fn <a href='#tymethod.new' class='fnname'>new</a>() -&gt; Self;
     fn <a href='#tymethod.add_node' class='fnname'>add_node</a>(&amp;mut self, node_id: N);

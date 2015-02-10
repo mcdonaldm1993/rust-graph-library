@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `D:\Dropbox\Uni\4th_Year\Individual_Project\rust-graph\src\graphs\undirected_adjacency_list_graph.rs`.">
+    <meta name="description" content="Source to the Rust file `src\graphs\undirected_adjacency_list_graph.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>undirected_adjacency_list_graph.rs.html -- source</title>
@@ -176,10 +176,8 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
-<span id="137">137</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Weak</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>hash_map</span>::<span class='ident'>Hasher</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::<span class='ident'>Hash</span>;
@@ -265,10 +263,10 @@
                 
                 <span class='kw'>match</span> <span class='ident'>edge</span> {
                     <span class='prelude-val'>Some</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> { <span class='kw'>return</span> <span class='prelude-val'>Ok</span>( (<span class='op'>*</span><span class='ident'>e</span>).<span class='ident'>clone</span>()); },
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> { <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;No edge exists between the provided vertices.&quot;</span>)); }
+                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> { <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;No edge exists between the provided vertices.&quot;</span>.<span class='ident'>to_string</span>()); }
                 }
             },
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> { <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;Node does not exists in graph.&quot;</span>)); }
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> { <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;Node does not exists in graph.&quot;</span>.<span class='ident'>to_string</span>()); }
         }
     }
     
@@ -311,7 +309,7 @@
         
         <span class='kw'>match</span> <span class='ident'>vertex</span> {
             <span class='prelude-val'>Some</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u32</span>),
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;An error occured while getting the vertex degree.&quot;</span>))
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;An error occured while getting the vertex degree.&quot;</span>.<span class='ident'>to_string</span>())
         }
     }
 }
