@@ -1,8 +1,10 @@
 #![feature(core)]
 
 extern crate disjoint_set;
+extern crate fibonacci_heap;
 
 use disjoint_set::DisjointSet;
+use fibonacci_heap::FibonacciHeap;
 
 use std::vec::Vec;
 use std::collections::HashMap;
@@ -81,12 +83,11 @@ pub trait Graph<N, E>
         }
         
         let mut metadata: HashMap<N, MetadataDijsktra<N>>;
-        let mut nodes: Vec<N> = self.get_nodes();
+        let mut heap: FibonacciHeap<i32, N> = FibonacciHeap::new();
         
-        metadata = try!(create_dijkstra_metadata(&nodes, source));
-        
-        let mut min_id: N;
-        while !nodes.is_empty() {
+        metadata = try!(create_dijkstra_metadata(&self.get_nodes(), &mut heap, source));
+
+        while heap.minimum().is_some() {
             match metadata.get(destination) {
                 Some(ref x) => {
                     if x.visited {
@@ -96,16 +97,14 @@ pub trait Graph<N, E>
                 None => return Err("There was an error retrieving metadata about the target node.".to_string())
             }
             
-            min_id = try!(get_min_distance(&nodes, &metadata));
+            let min_id: N = heap.extract_min().unwrap().1;
             
             match metadata.get_mut(&min_id) {
                 Some(ref mut x) => x.visited = true,
                 None => return Err("There was an error retrieving metadata about a node.".to_string())
             }
-
-            remove_from_list(&mut nodes, &min_id);
             
-            try!(perform_edge_relaxation(self, &mut metadata, &min_id));
+            try!(perform_edge_relaxation(self, &mut metadata, &mut heap, &min_id));
         }
         
         backtrack_vertex_predecessor(&metadata, source, destination)
@@ -123,27 +122,24 @@ pub trait Graph<N, E>
         }
         
         let mut metadata: HashMap<N, MetadataDijsktra<N>>;
-        let mut nodes: Vec<N> = self.get_nodes();
-        let nodes_copy: Vec<N> = nodes.clone();
+        let mut heap: FibonacciHeap<i32, N> = FibonacciHeap::new();
+        let nodes: Vec<N> = self.get_nodes();
         
-        metadata = try!(create_dijkstra_metadata(&nodes, source));
+        metadata = try!(create_dijkstra_metadata(&nodes, &mut heap, source));
         
-        let mut min_id: N;
-        while !nodes.is_empty() {
-            min_id = try!(get_min_distance(&nodes, &metadata));
+        while heap.minimum().is_some() {
+            let min_id: N = heap.extract_min().unwrap().1;
             
             match metadata.get_mut(&min_id) {
                 Some(ref mut x) => x.visited = true,
                 None => return Err("There was an error retrieving metadata about a node.".to_string())
             }
-
-            remove_from_list(&mut nodes, &min_id);
             
-            try!(perform_edge_relaxation(self, &mut metadata, &min_id));
+            try!(perform_edge_relaxation(self, &mut metadata, &mut heap, &min_id));
         }
         
         let mut result: HashMap<N, GraphPath<N>> = HashMap::new();
-        for id in nodes_copy.iter() {
+        for id in nodes.iter() {
             result.insert(id.clone(), 
                 match backtrack_vertex_predecessor(&metadata, source, id) {
                     Ok(x) => x,
@@ -386,62 +382,33 @@ impl<N> GraphPath<N> {
 // Private functions used in the graph trait provided functions
 ////////////////////////////////////////////////////////////////////////////////
 
-fn create_dijkstra_metadata<N>(vertices: &Vec<N>, start_vertex: &N) -> Result<HashMap<N, MetadataDijsktra<N>>, String> 
+fn create_dijkstra_metadata<N>(vertices: &Vec<N>, heap: &mut FibonacciHeap<i32, N>, start_vertex: &N) -> Result<HashMap<N, MetadataDijsktra<N>>, String> 
     where N: Eq + Clone + Hash<Hasher>
 {
         let mut metadata: HashMap<N, MetadataDijsktra<N>> = HashMap::new();
                 
         for id in vertices.iter() {
-            let id_val = id.clone();
-            metadata.insert(id_val, MetadataDijsktra {
-                predecessor: None,
-                visited: false,
-                distance: i32::MAX
-            });
+            if !(id == start_vertex) {
+                metadata.insert(id.clone(), MetadataDijsktra {
+                    predecessor: None,
+                    visited: false,
+                    distance: i32::MAX
+                });
+                heap.insert(i32::MAX, id.clone())
+            }
         }
         
-        match metadata.get_mut(start_vertex) {
-            Some(ref mut x) => x.distance = 0,
-            None => return Err("An error occured while initialising the metadata.".to_string())
-        }
+        metadata.insert(start_vertex.clone(), MetadataDijsktra {
+            predecessor: None,
+            visited: false,
+            distance: 0
+        });
+        heap.insert(0, start_vertex.clone());
         
         Ok(metadata)
 }
 
-fn get_min_distance<N>(vertices: &Vec<N>, metadata: &HashMap<N, MetadataDijsktra<N>>) -> Result<N, String> 
- where N: Eq + Clone + Hash<Hasher>
-{
-    let mut min = i32::MAX;
-    let mut min_id = vertices[0].clone();
-    
-    for id in vertices.iter() {
-        let id_meta;
-        match metadata.get(id) {
-            Some(x) => id_meta = x,
-            None => return Err("An error occured while attempting to find a minimum distance.".to_string())
-        }
-        
-        if id_meta.distance <= min {
-            min = id_meta.distance;
-            min_id = id.clone();
-        }
-    }
-    
-    Ok(min_id)
-}
-
-fn remove_from_list<N>(vertices: &mut Vec<N>, id: &N) -> () 
-    where N: Eq
-{
-    for i in 0..vertices.len() {
-        if vertices[i] == *id {
-            vertices.remove(i);
-            break;
-        }
-    }
-}
-
-fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, MetadataDijsktra<N>>, min_id: &N) -> Result<(), String> 
+fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, MetadataDijsktra<N>>, heap: &mut FibonacciHeap<i32, N>, min_id: &N) -> Result<(), String> 
     where N: Eq + Clone + Hash<Hasher>,
           E: Eq + Clone + Hash<Hasher> + Edge<N>,
           G: Graph<N, E>
@@ -464,6 +431,7 @@ fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, Metadat
             if id_meta.distance > length {
                 id_meta.distance = length;
                 id_meta.predecessor = Some(min_id.clone());
+                let _ = heap.decrease_key(id.clone(), length);
             }
         }
     }

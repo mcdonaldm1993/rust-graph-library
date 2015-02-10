@@ -6,3 +6,6 @@ authors = ["Michael McDonald <mcdonaldm1993@gmail.com>"]
 
 [dependencies.disjoint_set]
 git = "https://github.com/mcdonaldm1993/disjoint-set.git"
+
+[dependencies.fibonacci_heap]
+git = "https://github.com/mcdonaldm1993/fibonacci-heap.git"
