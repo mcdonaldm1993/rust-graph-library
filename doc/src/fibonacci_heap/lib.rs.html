@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `D:\Dropbox\Uni\4th_Year\Individual_Project\rust-graph\src\graphs\mod.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Michael\.cargo\git\checkouts\fibonacci-heap-4a34d98fa986df81\master\src\lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>mod.rs.html -- source</title>
+    <title>lib.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
     
@@ -47,18 +47,14 @@
 <span id="5">5</span>
 <span id="6">6</span>
 <span id="7">7</span>
-<span id="8">8</span>
-<span id="9">9</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! This module contains default implementations for graphs and edges</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>weighted_edge</span>::<span class='ident'>WeightedEdge</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>unweighted_edge</span>::<span class='ident'>UnweightedEdge</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>undirected_adjacency_list_graph</span>::<span class='ident'>UndirectedAdjacencyListGraph</span>;
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>fibonacci_node</span>::<span class='ident'>FibonacciNodeType</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>fibonacci_heap</span>::<span class='ident'>FibonacciHeap</span>;
 
-<span class='kw'>mod</span> <span class='ident'>weighted_edge</span>;
-<span class='kw'>mod</span> <span class='ident'>unweighted_edge</span>;
-<span class='kw'>mod</span> <span class='ident'>undirected_adjacency_list_graph</span>;
+<span class='kw'>mod</span> <span class='ident'>fibonacci_heap</span>;
+<span class='kw'>mod</span> <span class='ident'>fibonacci_node</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -99,13 +95,13 @@
     
 
     <script>
-        window.rootPath = "../../../";
-        window.currentCrate = "graph";
+        window.rootPath = "../../";
+        window.currentCrate = "fibonacci_heap";
         window.playgroundUrl = "";
     </script>
-    <script src="../../../jquery.js"></script>
-    <script src="../../../main.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
     
-    <script async src="../../../search-index.js"></script>
+    <script async src="../../search-index.js"></script>
 </body>
 </html>
