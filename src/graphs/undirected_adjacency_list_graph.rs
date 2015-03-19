@@ -1,6 +1,5 @@
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::collections::hash_map::Hasher;
 use std::hash::Hash;
 
 use Edge;
@@ -14,8 +13,8 @@ pub struct UndirectedAdjacencyListGraph<N, E> {
 }
 
 impl<N, E> Graph<N, E> for UndirectedAdjacencyListGraph<N, E> 
-    where N: Eq + Clone + Hash<Hasher>,
-          E: Eq + Clone + Hash<Hasher> + Edge<N>
+    where N: Eq + Clone + Hash,
+          E: Eq + Clone + Hash + Edge<N>
 {
     fn new() -> UndirectedAdjacencyListGraph<N, E> {
         UndirectedAdjacencyListGraph {

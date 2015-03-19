@@ -268,7 +268,7 @@ fn test_kruskal_min_spanning_tree() {
     graph.add_edge(3, 5, 6);
     graph.add_edge(4, 5, 7);
     
-    let mut mst: UndirectedAdjacencyListGraph<i32, WeightedEdge<i32>> = graph.kruskal_min_spanning_tree();
+    let mst: UndirectedAdjacencyListGraph<i32, WeightedEdge<i32>> = graph.kruskal_min_spanning_tree();
     
     assert!(mst.is_node_in_graph(&1));
     assert!(mst.is_node_in_graph(&2));

@@ -9,7 +9,6 @@ use fibonacci_heap::FibonacciHeap;
 use std::vec::Vec;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::collections::hash_map::Hasher;
 use std::hash::Hash;
 use std::i32;
 use std::cmp::Eq;
@@ -38,8 +37,8 @@ struct MetadataKCore<N> {
 /// The `Graph` trait is used to implement common operations on a graph and provide implementations of graph algorithms
 /// that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.
 pub trait Graph<N, E>
-    where N: Eq + Clone + Hash<Hasher>,
-          E: Eq + Clone + Hash<Hasher> + Edge<N>
+    where N: Eq + Clone + Hash,
+          E: Eq + Clone + Hash + Edge<N>
 {
     /// Creates a new instance of the graph.
     fn new() -> Self;
@@ -139,7 +138,7 @@ pub trait Graph<N, E>
         }
         
         let mut result: HashMap<N, GraphPath<N>> = HashMap::new();
-        for id in nodes.iter() {
+        for id in &nodes {
             result.insert(id.clone(), 
                 match backtrack_vertex_predecessor(&metadata, source, id) {
                     Ok(x) => x,
@@ -161,7 +160,7 @@ pub trait Graph<N, E>
         let mut longest_path: GraphPath<N> = GraphPath::new();
         let mut longest_distance = i32::MIN;
 
-        for id in nodes.iter() {
+        for id in &nodes {
             let longest_paths = try!(self.dijkstras_shortest_paths(id));
             for path in longest_paths.values() {
                 if path.get_distance() > longest_distance {
@@ -186,7 +185,7 @@ pub trait Graph<N, E>
         let mut max_degree: i32 = 0;
         let mut current_core: i32 = 0;
         
-        for v in self.get_nodes().iter() {
+        for v in &self.get_nodes() {
             let degree = match self.degree(v) {
                 Ok(d) => d,
                 Err(_) => 0
@@ -229,7 +228,7 @@ pub trait Graph<N, E>
             
             let v_degree = v_vertex_meta.degree;
 
-            for u in self.get_node_neighbours(&v).iter() {
+            for u in &self.get_node_neighbours(&v) {
                 let mut u_vertex_meta = metadata.get(u).cloned().unwrap();
                 
                 if u_vertex_meta.degree > v_degree {
@@ -274,7 +273,7 @@ pub trait Graph<N, E>
         let mut max_bucket: i32 = i32::MIN;
         let n = self.get_nodes().len()-1;
         
-        for e in self.get_edges().iter() {
+        for e in &self.get_edges() {
             let weight = e.get_weight();
             
             if !buckets.contains_key(&weight) {
@@ -286,7 +285,7 @@ pub trait Graph<N, E>
             if weight > max_bucket { max_bucket = weight };            
         }
         
-        for n in self.get_nodes().iter() {
+        for n in &self.get_nodes() {
             node_set.make_set(n.clone());
         }
         
@@ -310,11 +309,11 @@ pub trait Graph<N, E>
         
         let mut mst: Self = Graph::new();
         
-        for n in self.get_nodes().iter() {
+        for n in &self.get_nodes() {
             mst.add_node(n.clone());
         }
         
-        for e in mst_edges.iter() {
+        for e in &mst_edges {
             mst.add_edge(e.get_source(), e.get_target(), e.get_weight());
         }
         
@@ -383,11 +382,11 @@ impl<N> GraphPath<N> {
 ////////////////////////////////////////////////////////////////////////////////
 
 fn create_dijkstra_metadata<N>(vertices: &Vec<N>, heap: &mut FibonacciHeap<i32, N>, start_vertex: &N) -> Result<HashMap<N, MetadataDijsktra<N>>, String> 
-    where N: Eq + Clone + Hash<Hasher>
+    where N: Eq + Clone + Hash
 {
         let mut metadata: HashMap<N, MetadataDijsktra<N>> = HashMap::new();
                 
-        for id in vertices.iter() {
+        for id in vertices {
             if !(id == start_vertex) {
                 metadata.insert(id.clone(), MetadataDijsktra {
                     predecessor: None,
@@ -409,11 +408,11 @@ fn create_dijkstra_metadata<N>(vertices: &Vec<N>, heap: &mut FibonacciHeap<i32, 
 }
 
 fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, MetadataDijsktra<N>>, heap: &mut FibonacciHeap<i32, N>, min_id: &N) -> Result<(), String> 
-    where N: Eq + Clone + Hash<Hasher>,
-          E: Eq + Clone + Hash<Hasher> + Edge<N>,
+    where N: Eq + Clone + Hash,
+          E: Eq + Clone + Hash + Edge<N>,
           G: Graph<N, E>
 {
-    for id in graph.get_node_neighbours(min_id).iter() {
+    for id in &graph.get_node_neighbours(min_id) {
         let min_id_meta;
         match metadata.get(min_id).cloned() {
             Some(x) => min_id_meta = x,
@@ -440,7 +439,7 @@ fn perform_edge_relaxation<N, E, G>(graph: &G, metadata: &mut HashMap<N, Metadat
 }
 
 fn backtrack_vertex_predecessor<N>(metadata: &HashMap<N, MetadataDijsktra<N>>, start_vertex: &N, target_vertex: &N) -> Result<GraphPath<N>, String>
-    where N: Eq + Clone + Hash<Hasher>
+    where N: Eq + Clone + Hash
 {
     let mut result: GraphPath<N> = GraphPath::new();
     
@@ -472,7 +471,7 @@ fn backtrack_vertex_predecessor<N>(metadata: &HashMap<N, MetadataDijsktra<N>>, s
 }
 
 fn get_next_vertex<N>(buckets: &mut HashMap<i32, HashSet<N>>, current_core: &mut i32) -> Result<N, ()> 
-    where N: Eq + Clone + Hash<Hasher>
+    where N: Eq + Clone + Hash
 {
     let current_core_bucket;
     
