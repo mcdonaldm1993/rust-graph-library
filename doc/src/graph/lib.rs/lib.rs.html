@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `D:\Dropbox\Uni\4th_Year\Individual_Project\rust-graph\src\lib.rs`.">
+    <meta name="description" content="Source to the Rust file `src\lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
 
     
     
@@ -539,7 +539,6 @@
 <span id="497">497</span>
 <span id="498">498</span>
 <span id="499">499</span>
-<span id="500">500</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
 
@@ -552,7 +551,6 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>vec</span>::<span class='ident'>Vec</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashSet</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>hash_map</span>::<span class='ident'>Hasher</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::<span class='ident'>Hash</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>i32</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>Eq</span>;
@@ -581,11 +579,11 @@
 <span class='doccomment'>/// The `Graph` trait is used to implement common operations on a graph and provide implementations of graph algorithms</span>
 <span class='doccomment'>/// that use these operations so that concrete types of graphs can be implemented and the algorithms used on them.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Graph</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>E</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span>,
-          <span class='ident'>E</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Edge</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span>,
+          <span class='ident'>E</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Edge</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>
 {
     <span class='doccomment'>/// Creates a new instance of the graph.</span>
-    <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
     
     <span class='doccomment'>/// The method to add a node to the graph.</span>
     <span class='kw'>fn</span> <span class='ident'>add_node</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>node_id</span>: <span class='ident'>N</span>) <span class='op'>-&gt;</span> ();
@@ -620,7 +618,7 @@
     <span class='doccomment'>/// Returns an error string if an error occured during the algorithm execution.</span>
     <span class='doccomment'>/// </span>
     <span class='doccomment'>/// This algorithm runs in worst case O(V&lt;sup&gt;2&lt;/sup&gt;) time.</span>
-    <span class='kw'>fn</span> <span class='ident'>dijkstras_shortest_path</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>, <span class='ident'>destination</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>Self</span>: <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>dijkstras_shortest_path</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>, <span class='ident'>destination</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='kw'>Self</span>: <span class='ident'>Sized</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_node_in_graph</span>(<span class='ident'>source</span>) <span class='op'>||</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_node_in_graph</span>(<span class='ident'>destination</span>) {
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;The start or target node does not exist in the graph.&quot;</span>.<span class='ident'>to_string</span>());
         }
@@ -659,7 +657,7 @@
     <span class='doccomment'>/// The `HashMap` will be empty if an error occured.</span>
     <span class='doccomment'>/// </span>
     <span class='doccomment'>/// This algorithm runs in worst case O(V&lt;sup&gt;2&lt;/sup&gt;) time.</span>
-    <span class='kw'>fn</span> <span class='ident'>dijkstras_shortest_paths</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>Self</span>: <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>dijkstras_shortest_paths</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='kw'>Self</span>: <span class='ident'>Sized</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_node_in_graph</span>(<span class='ident'>source</span>) {
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;The start node does not exist in the graph.&quot;</span>.<span class='ident'>to_string</span>());
         }
@@ -682,7 +680,7 @@
         }
         
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
-        <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='ident'>nodes</span>.<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>nodes</span> {
             <span class='ident'>result</span>.<span class='ident'>insert</span>(<span class='ident'>id</span>.<span class='ident'>clone</span>(), 
                 <span class='kw'>match</span> <span class='ident'>backtrack_vertex_predecessor</span>(<span class='kw-2'>&amp;</span><span class='ident'>metadata</span>, <span class='ident'>source</span>, <span class='ident'>id</span>) {
                     <span class='prelude-val'>Ok</span>(<span class='ident'>x</span>) <span class='op'>=&gt;</span> <span class='ident'>x</span>,
@@ -699,12 +697,12 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This uses the dijkstras_shortest_paths function to get all shortest paths pairs and find the longest.</span>
     <span class='doccomment'>/// This algorithm runs in O(V&lt;sup&gt;3&lt;/sup&gt;) time.</span>
-    <span class='kw'>fn</span> <span class='ident'>diameter_path</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>Self</span>: <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>diameter_path</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='kw'>Self</span>: <span class='ident'>Sized</span> {
         <span class='kw'>let</span> <span class='ident'>nodes</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>get_nodes</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>longest_path</span>: <span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>GraphPath</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>longest_distance</span> <span class='op'>=</span> <span class='ident'>i32</span>::<span class='ident'>MIN</span>;
 
-        <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='ident'>nodes</span>.<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>nodes</span> {
             <span class='kw'>let</span> <span class='ident'>longest_paths</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>dijkstras_shortest_paths</span>(<span class='ident'>id</span>));
             <span class='kw'>for</span> <span class='ident'>path</span> <span class='kw'>in</span> <span class='ident'>longest_paths</span>.<span class='ident'>values</span>() {
                 <span class='kw'>if</span> <span class='ident'>path</span>.<span class='ident'>get_distance</span>() <span class='op'>&gt;</span> <span class='ident'>longest_distance</span> {
@@ -722,14 +720,14 @@
     <span class='doccomment'>/// Returns a `HashMap` with the core as a key and a vector of all vertex IDs in that core as a value.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This algorithm runs in O(E) time.</span>
-    <span class='kw'>fn</span> <span class='ident'>k_core_decomposition</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>u32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='kw'>where</span> <span class='ident'>Self</span>: <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>k_core_decomposition</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>u32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='kw'>where</span> <span class='kw'>Self</span>: <span class='ident'>Sized</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buckets</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>i32</span>, <span class='ident'>HashSet</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>metadata</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>MetadataKCore</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>u32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>max_degree</span>: <span class='ident'>i32</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>current_core</span>: <span class='ident'>i32</span> <span class='op'>=</span> <span class='number'>0</span>;
         
-        <span class='kw'>for</span> <span class='ident'>v</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>get_nodes</span>().<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>v</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>get_nodes</span>() {
             <span class='kw'>let</span> <span class='ident'>degree</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>degree</span>(<span class='ident'>v</span>) {
                 <span class='prelude-val'>Ok</span>(<span class='ident'>d</span>) <span class='op'>=&gt;</span> <span class='ident'>d</span>,
                 <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='number'>0</span>
@@ -772,7 +770,7 @@
             
             <span class='kw'>let</span> <span class='ident'>v_degree</span> <span class='op'>=</span> <span class='ident'>v_vertex_meta</span>.<span class='ident'>degree</span>;
 
-            <span class='kw'>for</span> <span class='ident'>u</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>get_node_neighbours</span>(<span class='kw-2'>&amp;</span><span class='ident'>v</span>).<span class='ident'>iter</span>() {
+            <span class='kw'>for</span> <span class='ident'>u</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>get_node_neighbours</span>(<span class='kw-2'>&amp;</span><span class='ident'>v</span>) {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>u_vertex_meta</span> <span class='op'>=</span> <span class='ident'>metadata</span>.<span class='ident'>get</span>(<span class='ident'>u</span>).<span class='ident'>cloned</span>().<span class='ident'>unwrap</span>();
                 
                 <span class='kw'>if</span> <span class='ident'>u_vertex_meta</span>.<span class='ident'>degree</span> <span class='op'>&gt;</span> <span class='ident'>v_degree</span> {
@@ -808,7 +806,7 @@
     <span class='doccomment'>/// Returns the minimum spanning tree in the same graph implementation that is used.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This algorithm runs in O(Eα(V)) time, where α is the extremely slowly growing inverse of the single-valued Ackermann function.</span>
-    <span class='kw'>fn</span> <span class='ident'>kruskal_min_spanning_tree</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span> <span class='kw'>where</span> <span class='ident'>Self</span>: <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>kruskal_min_spanning_tree</span>(<span class='kw-2'>&amp;</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> <span class='kw'>where</span> <span class='kw'>Self</span>: <span class='ident'>Sized</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>node_set</span>: <span class='ident'>DisjointSet</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>DisjointSet</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mst_edges</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buckets</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>i32</span>, <span class='ident'>HashSet</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
@@ -817,7 +815,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>max_bucket</span>: <span class='ident'>i32</span> <span class='op'>=</span> <span class='ident'>i32</span>::<span class='ident'>MIN</span>;
         <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>get_nodes</span>().<span class='ident'>len</span>()<span class='op'>-</span><span class='number'>1</span>;
         
-        <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>get_edges</span>().<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>get_edges</span>() {
             <span class='kw'>let</span> <span class='ident'>weight</span> <span class='op'>=</span> <span class='ident'>e</span>.<span class='ident'>get_weight</span>();
             
             <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>buckets</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='ident'>weight</span>) {
@@ -829,7 +827,7 @@
             <span class='kw'>if</span> <span class='ident'>weight</span> <span class='op'>&gt;</span> <span class='ident'>max_bucket</span> { <span class='ident'>max_bucket</span> <span class='op'>=</span> <span class='ident'>weight</span> };            
         }
         
-        <span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>get_nodes</span>().<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>get_nodes</span>() {
             <span class='ident'>node_set</span>.<span class='ident'>make_set</span>(<span class='ident'>n</span>.<span class='ident'>clone</span>());
         }
         
@@ -851,13 +849,13 @@
             }
         }
         
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mst</span>: <span class='ident'>Self</span> <span class='op'>=</span> <span class='ident'>Graph</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mst</span>: <span class='kw'>Self</span> <span class='op'>=</span> <span class='ident'>Graph</span>::<span class='ident'>new</span>();
         
-        <span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>get_nodes</span>().<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>get_nodes</span>() {
             <span class='ident'>mst</span>.<span class='ident'>add_node</span>(<span class='ident'>n</span>.<span class='ident'>clone</span>());
         }
         
-        <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>mst_edges</span>.<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>mst_edges</span> {
             <span class='ident'>mst</span>.<span class='ident'>add_edge</span>(<span class='ident'>e</span>.<span class='ident'>get_source</span>(), <span class='ident'>e</span>.<span class='ident'>get_target</span>(), <span class='ident'>e</span>.<span class='ident'>get_weight</span>());
         }
         
@@ -868,7 +866,7 @@
 
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Edge</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>source</span>: <span class='ident'>N</span>, <span class='ident'>target</span>: <span class='ident'>N</span>, <span class='ident'>weight</span>: <span class='ident'>i32</span>, <span class='ident'>directed</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>source</span>: <span class='ident'>N</span>, <span class='ident'>target</span>: <span class='ident'>N</span>, <span class='ident'>weight</span>: <span class='ident'>i32</span>, <span class='ident'>directed</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
     
     <span class='kw'>fn</span> <span class='ident'>get_weight</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>i32</span>;
     
@@ -926,11 +924,11 @@
 <span class='comment'>////////////////////////////////////////////////////////////////////////////////</span>
 
 <span class='kw'>fn</span> <span class='ident'>create_dijkstra_metadata</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>(<span class='ident'>vertices</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>heap</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>FibonacciHeap</span><span class='op'>&lt;</span><span class='ident'>i32</span>, <span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>start_vertex</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>MetadataDijsktra</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> 
-    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span>
 {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>metadata</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>MetadataDijsktra</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
                 
-        <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='ident'>vertices</span>.<span class='ident'>iter</span>() {
+        <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='ident'>vertices</span> {
             <span class='kw'>if</span> <span class='op'>!</span>(<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>start_vertex</span>) {
                 <span class='ident'>metadata</span>.<span class='ident'>insert</span>(<span class='ident'>id</span>.<span class='ident'>clone</span>(), <span class='ident'>MetadataDijsktra</span> {
                     <span class='ident'>predecessor</span>: <span class='prelude-val'>None</span>,
@@ -952,11 +950,11 @@
 }
 
 <span class='kw'>fn</span> <span class='ident'>perform_edge_relaxation</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>E</span>, <span class='ident'>G</span><span class='op'>&gt;</span>(<span class='ident'>graph</span>: <span class='kw-2'>&amp;</span><span class='ident'>G</span>, <span class='ident'>metadata</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>MetadataDijsktra</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span>, <span class='ident'>heap</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>FibonacciHeap</span><span class='op'>&lt;</span><span class='ident'>i32</span>, <span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>min_id</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>String</span><span class='op'>&gt;</span> 
-    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span>,
-          <span class='ident'>E</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Edge</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>,
+    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span>,
+          <span class='ident'>E</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span> <span class='op'>+</span> <span class='ident'>Edge</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>,
           <span class='ident'>G</span>: <span class='ident'>Graph</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>E</span><span class='op'>&gt;</span>
 {
-    <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='ident'>graph</span>.<span class='ident'>get_node_neighbours</span>(<span class='ident'>min_id</span>).<span class='ident'>iter</span>() {
+    <span class='kw'>for</span> <span class='ident'>id</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>graph</span>.<span class='ident'>get_node_neighbours</span>(<span class='ident'>min_id</span>) {
         <span class='kw'>let</span> <span class='ident'>min_id_meta</span>;
         <span class='kw'>match</span> <span class='ident'>metadata</span>.<span class='ident'>get</span>(<span class='ident'>min_id</span>).<span class='ident'>cloned</span>() {
             <span class='prelude-val'>Some</span>(<span class='ident'>x</span>) <span class='op'>=&gt;</span> <span class='ident'>min_id_meta</span> <span class='op'>=</span> <span class='ident'>x</span>,
@@ -983,7 +981,7 @@
 }
 
 <span class='kw'>fn</span> <span class='ident'>backtrack_vertex_predecessor</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>(<span class='ident'>metadata</span>: <span class='kw-2'>&amp;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>N</span>, <span class='ident'>MetadataDijsktra</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span>, <span class='ident'>start_vertex</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>, <span class='ident'>target_vertex</span>: <span class='kw-2'>&amp;</span><span class='ident'>N</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span>
 {
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span>: <span class='ident'>GraphPath</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>GraphPath</span>::<span class='ident'>new</span>();
     
@@ -1015,7 +1013,7 @@
 }
 
 <span class='kw'>fn</span> <span class='ident'>get_next_vertex</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;</span>(<span class='ident'>buckets</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>i32</span>, <span class='ident'>HashSet</span><span class='op'>&lt;</span><span class='ident'>N</span><span class='op'>&gt;&gt;</span>, <span class='ident'>current_core</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>N</span>, ()<span class='op'>&gt;</span> 
-    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>Hasher</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>N</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Hash</span>
 {
     <span class='kw'>let</span> <span class='ident'>current_core_bucket</span>;
     
@@ -1081,13 +1079,13 @@
     
 
     <script>
-        window.rootPath = "../../";
+        window.rootPath = "../../../";
         window.currentCrate = "graph";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script async src="../../../search-index.js"></script>
 </body>
 </html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["UndirectedAdjacencyListGraph","An undirected graph represented by an adjacency list."]]});

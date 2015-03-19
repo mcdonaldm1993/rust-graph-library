@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["UndirectedAdjacencyListGraph","An undirected graph represented by an adjacency list."],["UnweightedEdge","A default implementation of a weighted edge that can be used in graph implementations."],["WeightedEdge","A default implementation of a weighted edge that can be used in graph implementations."]]});

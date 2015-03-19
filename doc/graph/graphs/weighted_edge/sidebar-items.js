@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["WeightedEdge","A default implementation of a weighted edge that can be used in graph implementations."]]});
