@@ -211,7 +211,7 @@ pub trait Graph<N, E>
             
             match get_next_vertex(&mut buckets, &mut current_core) {
                 Ok(vertex) => v = vertex,
-                Err(_) => if current_core == max_degree { break; } else { continue; }
+                Err(_) => if current_core-1 == max_degree { break; } else { continue; }
             }
             
             let mut v_vertex_meta = metadata.get(&v).cloned().unwrap();
@@ -298,7 +298,7 @@ pub trait Graph<N, E>
             
             match get_next_vertex(&mut buckets, &mut current_bucket) {
                 Ok(edge) => e = edge,
-                Err(_) => if current_bucket == max_bucket { break; } else { continue; }
+                Err(_) => if current_bucket-1 == max_bucket { break; } else { continue; }
             }
             
             if node_set.find(e.get_target()) != node_set.find(e.get_source()) {
